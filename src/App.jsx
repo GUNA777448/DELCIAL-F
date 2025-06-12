@@ -10,13 +10,10 @@ import Reserve from "./pages/Reserve";
 import Navbar from "./components/navbar";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
-import Loading from "./pages/Loading";
-
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Loading />} />
       <Route path="/home" element={<Home />} />
       <Route path="/menu" element={<Menu />} />
       <Route path="/login" element={<Login />} />
