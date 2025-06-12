@@ -2,14 +2,25 @@ import React from "react";
 import { motion } from "framer-motion";
 import { FaShoppingCart } from "react-icons/fa";
 
-const MenuCard = ({ name, price, desc, img, isVeg, isSpicy, isChill, isSweet }) => {
+const MenuCard = ({
+  name,
+  price,
+  desc,
+  img,
+  isVeg,
+  isSpicy,
+  isChill,
+  isSweet,
+}) => {
   const addToCart = () => {
     // Get existing cart items from localStorage
     const existingCart = JSON.parse(localStorage.getItem("cart") || "[]");
-    
+
     // Check if item already exists in cart
-    const existingItemIndex = existingCart.findIndex(item => item.name === name);
-    
+    const existingItemIndex = existingCart.findIndex(
+      (item) => item.name === name
+    );
+
     if (existingItemIndex >= 0) {
       // If item exists, increase quantity
       existingCart[existingItemIndex].quantity += 1;
@@ -20,13 +31,13 @@ const MenuCard = ({ name, price, desc, img, isVeg, isSpicy, isChill, isSweet }) 
         name,
         price,
         image: img,
-        quantity: 1
+        quantity: 1,
       });
     }
-    
+
     // Save updated cart to localStorage
     localStorage.setItem("cart", JSON.stringify(existingCart));
-    
+
     // Show success message
     alert(`${name} added to cart!`);
   };
@@ -69,7 +80,7 @@ const MenuCard = ({ name, price, desc, img, isVeg, isSpicy, isChill, isSweet }) 
         </div>
         <p className="text-[#92817a] mb-4">{desc}</p>
         <div className="flex justify-end items-center gap-4">
-          <button 
+          <button
             onClick={addToCart}
             className="text-[#362417] hover:text-[#92817a] transition p-2"
             title="Add to Cart"
