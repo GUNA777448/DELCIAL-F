@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import MenuCard from "../components/MenuCard";
+import MenuCard from "../components/Menucard";
 import Navbar from "../components/navbar";
 import { motion } from "framer-motion";
 
