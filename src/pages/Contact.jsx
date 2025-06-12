@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FaMapMarkerAlt, FaPhone, FaEnvelope } from "react-icons/fa";
-import Navbar from "../components/Navbar";
+import Navbar from "../components/navbar";
 
 function Contact() {
   const [form, setForm] = useState({
