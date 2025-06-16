@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import Navbar from "../components/navbar";
+import Footer from "../components/Footer";
 
 // 10 Special Dishes Data
 const specialDishes = [
@@ -113,7 +114,7 @@ function Home() {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-red-50 via-white to-yellow-50 relative">
       <Navbar />
-      
+
       {/* Hero Section with Carousel on Right */}
       <section className="flex flex-col md:flex-row items-center justify-between px-4 sm:px-6 md:px-24 py-12 md:py-24 bg-gradient-to-r from-red-100 via-white to-orange-100 sm:mt-[50px]">
         {/* Left: Hero Text */}
@@ -308,85 +309,7 @@ function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-stone-950 py-8 shadow-inner mt-auto">
-        <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6">
-          {/* Social Links */}
-          <div className="flex gap-4">
-            <a
-              href="https://facebook.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Facebook"
-              className="text-gray-500 hover:text-blue-600 transition-colors duration-300"
-            >
-              {/* Facebook Icon */}
-              <svg
-                width="24"
-                height="24"
-                fill="currentColor"
-                className="inline-block"
-              >
-                <path d="M22 12c0-5.522-4.477-10-10-10S2 6.478 2 12c0 4.991 3.657 9.128 8.438 9.877v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.242 0-1.632.771-1.632 1.562V12h2.773l-.443 2.89h-2.33v6.987C18.343 21.128 22 16.991 22 12z" />
-              </svg>
-            </a>
-            <a
-              href="https://instagram.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Instagram"
-              className="text-gray-500 hover:text-pink-500 transition-colors duration-300"
-            >
-              {/* Instagram Icon */}
-              <svg
-                width="24"
-                height="24"
-                fill="currentColor"
-                className="inline-block"
-              >
-                <path d="M7.75 2A5.75 5.75 0 0 0 2 7.75v8.5A5.75 5.75 0 0 0 7.75 22h8.5A5.75 5.75 0 0 0 22 16.25v-8.5A5.75 5.75 0 0 0 16.25 2h-8.5zm0 1.5h8.5A4.25 4.25 0 0 1 20.5 7.75v8.5A4.25 4.25 0 0 1 16.25 20.5h-8.5A4.25 4.25 0 0 1 3.5 16.25v-8.5A4.25 4.25 0 0 1 7.75 3.5zm4.25 2.25a6.25 6.25 0 1 0 0 12.5 6.25 6.25 0 0 0 0-12.5zm0 1.5a4.75 4.75 0 1 1 0 9.5 4.75 4.75 0 0 1 0-9.5zm6 1.25a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
-              </svg>
-            </a>
-            <a
-              href="https://twitter.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Twitter"
-              className="text-gray-500 hover:text-blue-400 transition-colors duration-300"
-            >
-              {/* Twitter Icon */}
-              <svg
-                width="24"
-                height="24"
-                fill="currentColor"
-                className="inline-block"
-              >
-                <path d="M22.46 6c-.79.35-1.64.58-2.53.69a4.48 4.48 0 0 0 1.97-2.48 8.94 8.94 0 0 1-2.83 1.08A4.48 4.48 0 0 0 11.07 9c0 .35.04.7.11 1.03C7.72 9.9 4.8 8.13 2.89 5.6c-.38.65-.6 1.4-.6 2.2 0 1.52.77 2.86 1.95 3.65-.72-.02-1.39-.22-1.98-.54v.05c0 2.13 1.52 3.9 3.54 4.3-.37.1-.77.16-1.18.16-.29 0-.56-.03-.83-.08.56 1.74 2.21 3.01 4.16 3.05A8.98 8.98 0 0 1 2 19.54c-.65 0-1.28-.04-1.9-.11A12.72 12.72 0 0 0 7.29 21c8.29 0 12.84-6.87 12.84-12.84 0-.2 0-.39-.01-.58A9.22 9.22 0 0 0 24 4.59a8.93 8.93 0 0 1-2.54.7z" />
-              </svg>
-            </a>
-            <a
-              href="https://linkedin.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="LinkedIn"
-              className="text-gray-500 hover:text-blue-700 transition-colors duration-300"
-            >
-              {/* LinkedIn Icon */}
-              <svg
-                width="24"
-                height="24"
-                fill="currentColor"
-                className="inline-block"
-              >
-                <path d="M19 0h-14c-2.76 0-5 2.24-5 5v14c0 2.76 2.24 5 5 5h14c2.76 0 5-2.24 5-5v-14c0-2.76-2.24-5-5-5zm-11.75 19h-2.5v-8.5h2.5v8.5zm-1.25-9.75c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm14 9.75h-2.5v-4c0-1.1-.9-2-2-2s-2 .9-2 2v4h-2.5v-8.5h2.5v1.17c.41-.72 1.23-1.17 2-1.17 1.66 0 3 1.34 3 3v5.5z" />
-              </svg>
-            </a>
-          </div>
-          {/* Copyright */}
-          <div className="text-gray-500 text-sm text-center md:text-right">
-            &copy; {new Date().getFullYear()} Delicial. All rights reserved.
-          </div>
-        </div>
-      </footer>
+      <Footer />
 
       {/* Scroll to Top Button */}
       {showTopBtn && (

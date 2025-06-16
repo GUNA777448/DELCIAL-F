@@ -85,9 +85,9 @@ function Login() {
 
         {/* Right: Login Form */}
         <div className="w-full md:w-1/2 flex flex-col justify-center p-8">
-          <div className="flex mb-6 bg-blue-50 p-2 rounded-3xl shadow-md w-[230px] mx-auto">
+          <div className="flex mb-6 bg-blue-50 p-2 rounded-3xl shadow-md w-[135px] mx-auto">
             <button
-              className={`px-6 py-2 rounded-full font-semibold text-sm focus:outline-none transition-all ${
+              className={`px-6 py-2 rounded-full font-semibold text-center text-sm focus:outline-none transition-all ${
                 tab === "candidate"
                   ? "bg-blue-100 text-blue-900"
                   : "text-gray-500"
@@ -95,16 +95,6 @@ function Login() {
               onClick={() => setTab("candidate")}
             >
               Customer
-            </button>
-            <button
-              className={`px-6 py-2 rounded-full font-semibold text-sm focus:outline-none transition-all ${
-                tab === "recruiter"
-                  ? "bg-blue-100 text-blue-900"
-                  : "text-gray-500"
-              }`}
-              onClick={() => setTab("recruiter")}
-            >
-              Admin
             </button>
           </div>
 
