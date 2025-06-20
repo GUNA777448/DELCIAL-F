@@ -116,10 +116,10 @@ function Home() {
       <Navbar />
 
       {/* Hero Section with Carousel on Right */}
-      <section className="flex flex-col md:flex-row items-center justify-between px-4 sm:px-6 md:px-24 py-12 md:py-24 bg-gradient-to-r from-red-100 via-white to-orange-100 sm:mt-[50px]">
+      <section className="mt-[20px] flex flex-col md:flex-row items-center justify-between px-4 sm:px-6 md:px-24 py-12 md:py-24 bg-gradient-to-r from-red-100 via-white to-orange-100">
         {/* Left: Hero Text */}
-        <div className="w-full md:max-w-xl animate-fadeIn flex-1 mb-10 md:mb-0">
-          <h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold mb-4 md:mb-6 text-red-700 drop-shadow-lg text-center md:text-left">
+        <div className="w-full md:max-w-xl animate-fadeIn flex-1 mb-10 md:mb-0 ">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold mb-4 md:mb-6 text-red-700 drop-shadow-lg text-center md:text-left  ">
             Welcome to Delicial!
           </h1>
           <p className="text-base sm:text-lg md:text-xl mb-6 md:mb-8 text-gray-700 font-medium text-center md:text-left">

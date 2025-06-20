@@ -10,10 +10,12 @@ import Reserve from "./pages/Reserve";
 import Navbar from "./components/navbar";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import PaymentPage from "./components/Payment";
 
 function App() {
   return (
     <Routes>
+      <Route path="/pay" element={<PaymentPage />} />
       <Route path="/" element={<Home />} />
       <Route path="/menu" element={<Menu />} />
       <Route path="/login" element={<Login />} />
