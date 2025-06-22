@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaGoogle, FaGithub } from "react-icons/fa";
-
+import axios from "axios";
 function Signup() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -14,11 +14,42 @@ function Signup() {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle signup logic here
-    navigate("/");
+
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match ⚠️");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "https://delicial-b.onrender.com/api/auth/signup",
+        {
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log("Sending data to server:", {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+      });
+
+      alert("Signup successful ✅");
+      navigate("/login");
+    } catch (err) {
+      console.error("Signup error 💥", err.response?.data || err.message);
+      alert(
+        `Signup failed ❌: ${err.response?.data?.message || "Unknown error"}`
+      );
+    }
   };
 
   return (
@@ -28,7 +59,10 @@ function Signup() {
           <h2 className="text-3xl font-bold text-gray-900">Create Account</h2>
           <p className="mt-2 text-sm text-gray-600">
             Already have an account?{" "}
-            <Link to="/login" className="text-red-600 hover:text-red-500 font-medium">
+            <Link
+              to="/login"
+              className="text-red-600 hover:text-red-500 font-medium"
+            >
               Sign in
             </Link>
           </p>
@@ -37,7 +71,10 @@ function Signup() {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Full Name
               </label>
               <input
@@ -53,7 +90,10 @@ function Signup() {
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Email address
               </label>
               <input
@@ -69,7 +109,10 @@ function Signup() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Password
               </label>
               <input
@@ -85,7 +128,10 @@ function Signup() {
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Confirm Password
               </label>
               <input
@@ -135,7 +181,9 @@ function Signup() {
               <div className="w-full border-t border-gray-300"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or sign up with</span>
+              <span className="px-2 bg-white text-gray-500">
+                Or sign up with
+              </span>
             </div>
           </div>
 
@@ -162,4 +210,4 @@ function Signup() {
   );
 }
 
-export default Signup; 
+export default Signup;

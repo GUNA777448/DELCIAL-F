@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaGoogle, FaLinkedin, FaEye, FaEyeSlash } from "react-icons/fa";
+import axios from "axios";
 
 const carouselImages = [
   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTC_HNtzab6ojgN54e2XDDJ31nBF6n84Iulpg&s",
@@ -32,7 +33,20 @@ function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    navigate("/");
+    try{
+      const response = axios.post(
+        "https://restaurant-backend-1.onrender.com/api/v1/auth/login",
+        formData
+      );
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+  navigate("/");
+    }
+    catch (error) {
+      console.error("Login failed:", error);
+      alert("Login failed. Please check your credentials.");
+    }
+  
   };
 
   return (
