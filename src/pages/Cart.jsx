@@ -42,7 +42,7 @@ function Cart() {
   const handleCheckout = () => {
     // Clear cart and redirect to home
     localStorage.removeItem("cart");
-    navigate("/");
+    navigate("/Payment");
   };
 
   return (

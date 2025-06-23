@@ -24,7 +24,7 @@ function Signup() {
 
     try {
       const response = await axios.post(
-        "https://delicial-b.onrender.com/api/auth/signup",
+        " http://localhost:3000/api/auth/signup",
         {
           name: formData.name,
           email: formData.email,

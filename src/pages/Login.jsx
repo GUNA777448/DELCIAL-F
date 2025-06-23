@@ -33,20 +33,15 @@ function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    try{
-      const response = axios.post(
-        "https://restaurant-backend-1.onrender.com/api/v1/auth/login",
-        formData
-      );
+    try {
+      const response = axios.post("http://localhost:3000/login", formData);
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
-  navigate("/");
-    }
-    catch (error) {
+      navigate("/");
+    } catch (error) {
       console.error("Login failed:", error);
       alert("Login failed. Please check your credentials.");
     }
-  
   };
 
   return (

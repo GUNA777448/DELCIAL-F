@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import MenuCard from "../components/Menucard";
 import Navbar from "../components/navbar";
 import { motion } from "framer-motion";
@@ -9,6 +9,7 @@ const menuCategories = [
   "Biryani",
   "Desserts",
   "Beverages",
+  "Icecreams",
 ];
 
 const menuItems = [
@@ -351,9 +352,44 @@ const menuItems = [
     isChill: true,
     isSweet: true,
   },
+  {
+    name: "Choco Sandwhich",
+    price: 150,
+    desc: "Creamy milkshake with choice of flavors",
+    img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBhU2HfjmdP-lt51gfYH9-JYMsqeD2Fmfb-Q&s",
+    category: "Icecreams",
+    isVeg: true,
+    isSpicy: false,
+    isChill: true,
+    isSweet: true,
+  },
+  {
+    name: "delicial cone",
+    price: 150,
+    desc: "Creamy milkshake with choice of flavors",
+    img: "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/recipe-image-legacy-id-560491_11-8342908.jpg?resize=768,574",
+    category: "Icecreams",
+    isVeg: true,
+    isSpicy: false,
+    isChill: true,
+    isSweet: true,
+  },
+  {
+    name: "Scoopes ",
+    price: 150,
+    desc: "Creamy milkshake with choice of flavors",
+    img: "https://funcakes.com/content/uploads/2023/06/Ice-cream-recipe-960x540-c-default.jpg",
+    category: "Icecreams",
+    isVeg: true,
+    isSpicy: false,
+    isChill: true,
+    isSweet: true,
+  },
 ];
 
 const Menu = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+
   const scrollRefs = {
     Starters: useRef(null),
     "Main Course": useRef(null),
@@ -370,6 +406,10 @@ const Menu = () => {
     }
   };
 
+  const filteredItems = menuItems.filter((item) =>
+    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <>
       <Navbar />
@@ -383,107 +423,138 @@ const Menu = () => {
             <p className="text-xl opacity-90">Discover our culinary delights</p>
           </div>
         </div>
+
         {/* Search Bar */}
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="flex justify-center">
             <input
               type="text"
               placeholder="Search for dishes..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 transition"
             />
-            <button className="ml-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition">
-              Search
+            <button
+              onClick={() => setSearchTerm("")}
+              className="ml-2 bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400 transition"
+            >
+              Clear
             </button>
           </div>
         </div>
-        {/* Menu Sections */}
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          {menuCategories.map((category) => {
-            const categoryItems = menuItems.filter(
-              (item) => item.category === category
-            );
 
-            return (
-              <div key={category} className="mb-12">
-                {/* Category Header */}
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl md:text-3xl font-bold text-gray-800">
-                    {category}
-                  </h2>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => scroll(category, "left")}
-                      className="bg-red-600 text-white p-2 rounded-full shadow-lg hover:bg-red-700 transition"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-6 w-6"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
+        {/* Conditional rendering based on search */}
+        {searchTerm.trim() !== "" ? (
+          <div className="max-w-7xl mx-auto px-4 py-8">
+            <h2 className="text-2xl font-bold mb-4 text-gray-700">
+              Search Results
+            </h2>
+            {filteredItems.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredItems.map((item, idx) => (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: idx * 0.1 }}
+                  >
+                    <MenuCard {...item} />
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500">No matching dishes found 😔</p>
+            )}
+          </div>
+        ) : (
+          <div className="max-w-7xl mx-auto px-4 py-8">
+            {menuCategories.map((category) => {
+              const categoryItems = menuItems.filter(
+                (item) => item.category === category
+              );
+
+              return (
+                <div key={category} className="mb-12">
+                  {/* Category Header */}
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-800">
+                      {category}
+                    </h2>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => scroll(category, "left")}
+                        className="bg-red-600 text-white p-2 rounded-full shadow-lg hover:bg-red-700 transition"
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M15 19l-7-7 7-7"
-                        />
-                      </svg>
-                    </button>
-                    <button
-                      onClick={() => scroll(category, "right")}
-                      className="bg-red-600 text-white p-2 rounded-full shadow-lg hover:bg-red-700 transition"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-6 w-6"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-6 w-6"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 19l-7-7 7-7"
+                          />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={() => scroll(category, "right")}
+                        className="bg-red-600 text-white p-2 rounded-full shadow-lg hover:bg-red-700 transition"
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 5l7 7-7 7"
-                        />
-                      </svg>
-                    </button>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-6 w-6"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5l7 7-7 7"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Scrollable Items */}
+                  <div
+                    ref={scrollRefs[category]}
+                    className="flex overflow-x-auto gap-6 pb-6 snap-x snap-mandatory"
+                    style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+                  >
+                    {categoryItems.map((item, idx) => (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3, delay: idx * 0.1 }}
+                        className="min-w-[300px] md:min-w-[350px] snap-center"
+                      >
+                        <MenuCard {...item} />
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  {/* Scroll Indicators */}
+                  <div className="flex justify-center mt-4 gap-2">
+                    {categoryItems.map((_, idx) => (
+                      <div
+                        key={idx}
+                        className="w-2 h-2 rounded-full bg-gray-300"
+                      />
+                    ))}
                   </div>
                 </div>
-
-                {/* Category Items Scroll Container */}
-                <div
-                  ref={scrollRefs[category]}
-                  className="flex overflow-x-auto gap-6 pb-6 snap-x snap-mandatory"
-                  style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-                >
-                  {categoryItems.map((item, idx) => (
-                    <motion.div
-                      key={idx}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: idx * 0.1 }}
-                      className="min-w-[300px] md:min-w-[350px] snap-center"
-                    >
-                      <MenuCard {...item} />
-                    </motion.div>
-                  ))}
-                </div>
-
-                {/* Scroll Indicators */}
-                <div className="flex justify-center mt-4 gap-2">
-                  {categoryItems.map((_, idx) => (
-                    <div
-                      key={idx}
-                      className="w-2 h-2 rounded-full bg-gray-300"
-                    />
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
 
         {/* Special Offers Banner */}
         <div className="bg-yellow-100 py-12 mt-12">

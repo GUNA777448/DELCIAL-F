@@ -11,6 +11,7 @@ import Navbar from "./components/navbar";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import PaymentPage from "./components/Payment";
+import Checkout from "./pages/Payment";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
       <Route path="/reservation" element={<Reserve />} />
       <Route path="/about" element={<About />} />
       <Route path="/contact" element={<Contact />} />
+      <Route path="/Payment" element={<Checkout />} />
     </Routes>
   );
 }
