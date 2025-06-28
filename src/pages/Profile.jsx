@@ -26,7 +26,6 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Check if user is logged in
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -39,7 +38,6 @@ const Profile = () => {
     // eslint-disable-next-line
   }, []);
 
-  // Fetch profile info
   const fetchProfile = async (token) => {
     try {
       const res = await axios.get("/api/users/profile", {
@@ -51,7 +49,6 @@ const Profile = () => {
     }
   };
 
-  // Fetch orders
   const fetchOrders = async (token) => {
     try {
       const res = await axios.get("/api/orders/mine", {
@@ -65,12 +62,10 @@ const Profile = () => {
     }
   };
 
-  // Update profile
   const updateProfile = async () => {
     setLoading(true);
     const token = localStorage.getItem("token");
     try {
-      // Send the update request
       await axios.put(
         "/api/users/profile",
         {
@@ -84,10 +79,7 @@ const Profile = () => {
         }
       );
 
-      // Notify user
       toast.success("Profile updated 🎉");
-
-      // Refetch fresh data from backend
       await fetchProfile(token);
     } catch (err) {
       toast.error("Update failed ❌");
@@ -96,26 +88,26 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-700 via-red-500 to-red-400 p-6">
+    <div className="min-h-screen bg-red-600 p-6">
       <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-6">
-        {/* Profile Column */}
+        {/* Profile Section */}
         <div className="w-full lg:w-1/2">
-          <div className="bg-white/20 backdrop-blur-lg rounded-3xl shadow-lg p-8 border border-white/20">
+          <div className="bg-white rounded-3xl shadow-xl p-8 text-black">
             <div className="flex flex-col items-center space-y-4">
               <img
                 src={profile.profilePic}
                 alt="Profile"
-                className="w-28 h-28 rounded-full border-4 border-white shadow-lg"
+                className="w-28 h-28 rounded-full border-4 border-gray-300 shadow-lg"
               />
               <div className="text-center">
-                <h2 className="text-3xl font-bold text-white">
+                <h2 className="text-3xl font-bold">
                   {profile.name || "User"}{" "}
                   {profile.gender && `(${profile.gender})`}
                 </h2>
                 {profile.age && (
-                  <p className="text-white/70">Age: {profile.age}</p>
+                  <p className="text-gray-600">Age: {profile.age}</p>
                 )}
-                <p className="text-white/80">{profile.email}</p>
+                <p className="text-gray-700">{profile.email}</p>
               </div>
             </div>
 
@@ -127,7 +119,7 @@ const Profile = () => {
                   setProfile((prev) => ({ ...prev, name: e.target.value }))
                 }
                 placeholder="Your Name"
-                className="w-full p-3 rounded-xl bg-white/60 focus:bg-white outline-none"
+                className="w-full p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring"
               />
 
               <input
@@ -137,7 +129,7 @@ const Profile = () => {
                   setProfile((prev) => ({ ...prev, phone: e.target.value }))
                 }
                 placeholder="Your Phone"
-                className="w-full p-3 rounded-xl bg-white/60 focus:bg-white outline-none"
+                className="w-full p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring"
               />
 
               <input
@@ -147,7 +139,7 @@ const Profile = () => {
                   setProfile((prev) => ({ ...prev, gender: e.target.value }))
                 }
                 placeholder="Gender"
-                className="w-full p-3 rounded-xl bg-white/60 focus:bg-white outline-none"
+                className="w-full p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring"
               />
 
               <input
@@ -157,14 +149,14 @@ const Profile = () => {
                   setProfile((prev) => ({ ...prev, age: e.target.value }))
                 }
                 placeholder="Age"
-                className="w-full p-3 rounded-xl bg-white/60 focus:bg-white outline-none"
+                className="w-full p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring"
               />
 
               <input
                 type="email"
                 value={profile.email}
                 disabled
-                className="w-full p-3 rounded-xl bg-white/40 text-gray-500 cursor-not-allowed"
+                className="w-full p-3 rounded-xl bg-gray-200 text-gray-500 cursor-not-allowed"
               />
 
               <button
@@ -179,7 +171,7 @@ const Profile = () => {
 
               <Link
                 to="/"
-                className="block text-center bg-white/30 hover:bg-white/40 text-white py-3 rounded-xl font-semibold text-lg transition duration-300"
+                className="block text-center bg-gray-200 hover:bg-gray-300 text-black py-3 rounded-xl font-semibold text-lg transition duration-300"
               >
                 ⬅️ Back to Home
               </Link>
@@ -187,12 +179,12 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* Right Column */}
+        {/* Right Section */}
         <div className="w-full lg:w-1/2 flex flex-col gap-6">
           {/* Address */}
-          <div className="bg-white/20 backdrop-blur-lg rounded-3xl shadow-lg p-6 border border-white/20 text-white">
+          <div className="bg-white rounded-3xl shadow-xl p-6 text-black">
             <h3 className="text-xl font-bold mb-3">Saved Address</h3>
-            <p className="text-white/80">
+            <p>
               {profile.address?.line1}, {profile.address?.line2}
               <br />
               {profile.address?.city}, {profile.address?.state} -{" "}
@@ -201,22 +193,22 @@ const Profile = () => {
           </div>
 
           {/* Orders */}
-          <div className="bg-white/20 backdrop-blur-lg rounded-3xl shadow-lg p-6 border border-white/20 text-white">
+          <div className="bg-white rounded-3xl shadow-xl p-6 text-black">
             <h3 className="text-xl font-bold mb-4">Past Orders</h3>
             {orders.length === 0 ? (
-              <p className="text-white/70 italic">No orders found</p>
+              <p className="text-gray-600 italic">No orders found</p>
             ) : (
               <ul className="space-y-4">
                 {orders.map((order, index) => (
                   <li
                     key={order._id}
-                    className="bg-white/10 p-4 rounded-xl border border-white/10"
+                    className="bg-gray-100 p-4 rounded-xl border border-gray-200"
                   >
                     <p className="font-semibold">
                       Order #{index + 1} – ₹{order.totalAmount}
                     </p>
-                    <p className="text-white/70">Status: {order.orderStatus}</p>
-                    <p className="text-sm text-white/60">
+                    <p className="text-gray-700">Status: {order.orderStatus}</p>
+                    <p className="text-sm text-gray-500">
                       {new Date(order.createdAt).toLocaleString()}
                     </p>
                   </li>
@@ -225,23 +217,23 @@ const Profile = () => {
             )}
           </div>
 
-          {/* Saved Cards */}
-          <div className="bg-white/20 backdrop-blur-lg rounded-3xl shadow-lg p-6 border border-white/20 text-white">
+          {/* Cards */}
+          <div className="bg-white rounded-3xl shadow-xl p-6 text-black">
             <h3 className="text-xl font-bold mb-4">Saved Cards</h3>
             {profile.savedCards?.length === 0 ? (
-              <p className="text-white/70 italic">No cards saved</p>
+              <p className="text-gray-600 italic">No cards saved</p>
             ) : (
               <ul className="space-y-4">
                 {profile.savedCards.map((card, idx) => (
                   <li
                     key={idx}
-                    className="bg-white/10 p-4 rounded-xl border border-white/10"
+                    className="bg-gray-100 p-4 rounded-xl border border-gray-200"
                   >
                     <p className="font-semibold">**** **** **** {card.last4}</p>
-                    <p className="text-white/80">
+                    <p>
                       {card.name} • Exp: {card.expMonth}/{card.expYear}
                     </p>
-                    <p className="text-white/60 text-sm">
+                    <p className="text-sm text-gray-600">
                       Card Type: {card.brand}
                     </p>
                   </li>
