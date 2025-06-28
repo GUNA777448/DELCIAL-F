@@ -24,7 +24,7 @@ function Signup() {
 
     try {
       const response = await axios.post(
-        " http://localhost:3000/api/auth/signup",
+        "http://localhost:3000/api/auth/signup",
         {
           name: formData.name,
           email: formData.email,
@@ -43,7 +43,9 @@ function Signup() {
       });
 
       alert("Signup successful ✅");
-      navigate("/login");
+
+      localStorage.setItem("user", JSON.stringify(response.data));
+      navigate("/"); // or navigate to dashboard/admin based on role
     } catch (err) {
       console.error("Signup error 💥", err.response?.data || err.message);
       alert(

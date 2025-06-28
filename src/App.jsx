@@ -12,6 +12,8 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import PaymentPage from "./components/Payment";
 import Checkout from "./pages/Payment";
+import Profile from "./pages/Profile";
+import AdminDashboard from "./pages/Admin";
 
 function App() {
   return (
@@ -26,6 +28,8 @@ function App() {
       <Route path="/about" element={<About />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/Payment" element={<Checkout />} />
+      <Route path="/profile" element={<Profile />} />
+      <Route path="/admin" element={<AdminDashboard />} />
     </Routes>
   );
 }

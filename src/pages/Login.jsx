@@ -10,7 +10,7 @@ const carouselImages = [
   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSADXnxv0ljfzD_a74LupI1L4KAFx0vvoBOCQ&s",
   "https://cdn.loveandlemons.com/wp-content/uploads/2020/06/IMG_25456.jpg",
   "https://www.southernliving.com/thmb/rQaGDkAPGa_MeU4eglrAaeuexjg=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/southern-living-chicken-parmesan-ddmfs-0047-fe218cb392784e79bfb4bb586685d6f9.jpg",
-  "",
+  ,
 ];
 
 function Login() {
@@ -30,16 +30,28 @@ function Login() {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = axios.post("http://localhost:3000/login", formData);
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem("user", JSON.stringify(response.data.user));
+      const response = await axios.post(
+        "http://localhost:3000/api/auth/login", // ✅ Make sure this matches your backend route
+        formData
+      );
+
+      const { token, name, email } = response.data;
+
+      // ✅ Store token
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify({ name, email }));
+
+      // ✅ Redirect and notify
+      alert("Login successful!");
       navigate("/");
     } catch (error) {
-      console.error("Login failed:", error);
+      console.error(
+        "Login failed:",
+        error.response?.data?.message || error.message
+      );
       alert("Login failed. Please check your credentials.");
     }
   };
