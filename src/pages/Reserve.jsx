@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { FaUtensils } from "react-icons/fa";
 import Navbar from "../components/navbar";
+import axios from "axios";
+import { toast } from "react-hot-toast"; // Optional, but clean AF for alerts
 
 const restaurants = [
   { name: "Delicial Downtown", value: "downtown" },
@@ -28,7 +30,32 @@ function Reserve() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setSubmitted(true);
+    try {
+      const token = localStorage.getItem("token");
+      const response = axios.post(
+        "http://localhost:3000/api/reservations",
+        {
+          restaurant: form.restaurant,
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          date: form.date,
+          time: form.time,
+          people: form.guests,
+          specialRequest: form.requests,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setSubmitted(true);
+      toast.success("Reservation confirmed!");
+    } catch (err) {
+      toast.error("Reservation failed");
+    }
   };
 
   return (

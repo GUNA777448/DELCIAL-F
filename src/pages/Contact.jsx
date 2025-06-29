@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { FaMapMarkerAlt, FaPhone, FaEnvelope } from "react-icons/fa";
 import Navbar from "../components/navbar";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 
 function Contact() {
   const [form, setForm] = useState({
@@ -16,9 +18,27 @@ function Contact() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
+    console.log(form);
+    try {
+      await axios.post("http://localhost:3000/api/contact", form); // replace with deployed URL if needed
+
+      toast.success("Message sent successfully!");
+
+      setSubmitted(true);
+
+      // Reset form
+      setForm({
+        name: "",
+        email: "",
+        subject: "",
+        message: "",
+      });
+    } catch (error) {
+      console.error("Error sending message:", error);
+      toast.error("Failed to send message. Try again later.");
+    }
   };
 
   const AnimatedInput = ({
@@ -94,33 +114,54 @@ function Contact() {
               </p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-6 relative">
-              <AnimatedInput
-                label="Name"
-                type="text"
-                name="name"
-                value={form.name}
-                onChange={handleChange}
-                placeholder="Your Name"
-              />
-              <AnimatedInput
-                label="Email"
-                type="email"
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-                placeholder="Your Email"
-              />
-              <AnimatedInput
-                label="Subject"
-                type="text"
-                name="subject"
-                value={form.subject}
-                onChange={handleChange}
-                placeholder="Subject"
-              />
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label className="block text-gray-700 font-semibold mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Name
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={form.name}
+                  onChange={handleChange}
+                  placeholder="Your Name"
+                  required
+                  className="w-full border border-gray-300 rounded px-4 py-2"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  placeholder="Your Email"
+                  required
+                  className="w-full border border-gray-300 rounded px-4 py-2"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Subject
+                </label>
+                <input
+                  type="text"
+                  name="subject"
+                  value={form.subject}
+                  onChange={handleChange}
+                  placeholder="Subject"
+                  required
+                  className="w-full border border-gray-300 rounded px-4 py-2"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Message
                 </label>
                 <textarea
@@ -129,12 +170,14 @@ function Contact() {
                   onChange={handleChange}
                   rows="4"
                   placeholder="Your Message"
-                  className="w-full border border-gray-300 rounded-md px-4 py-3 bg-transparent text-gray-700 focus:outline-none focus:ring-2 focus:ring-red-300 transition resize-none"
+                  required
+                  className="w-full border border-gray-300 rounded px-4 py-2 resize-none"
                 ></textarea>
               </div>
+
               <button
                 type="submit"
-                className="w-full bg-red-600 text-white py-3 rounded-md font-semibold shadow-lg hover:bg-red-700 transition-all duration-300"
+                className="w-full bg-red-600 text-white py-2 rounded font-semibold"
               >
                 Send Message
               </button>

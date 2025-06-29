@@ -6,19 +6,29 @@ const AdminDashboard = ({ user }) => {
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState(null);
 
+  /*************  ✨ Windsurf Command 🌟  *************/
+  // Asynchronous function to fetch orders for the admin dashboard
   const fetchOrders = async () => {
     try {
+      // Make a GET request to fetch orders from the server
       const { data } = await axios.get("/api/orders", {
+        // Attach authorization token for secure access
         headers: {
           Authorization: `Bearer ${user.token}`,
         },
       });
+
+      // Update state with fetched orders data
       setOrders(data);
+
+      // Set loading state to false as data fetching is complete
       setLoading(false);
     } catch (err) {
+      // Log error if fetching orders fails
       console.error("Failed to fetch orders", err);
     }
   };
+  /*******  fba3d761-46d6-4fe9-89b1-30477e17b22c  *******/
 
   const handleStatusChange = async (id, newStatus) => {
     setUpdatingId(id);

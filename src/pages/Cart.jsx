@@ -80,7 +80,7 @@ function Cart() {
                       />
                       <div>
                         <h3 className="font-semibold text-lg">{item.name}</h3>
-                        <p className="text-gray-600">${item.price}</p>
+                        <p className="text-gray-600">₹{item.price}</p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-4">
@@ -118,16 +118,16 @@ function Cart() {
                 <div className="space-y-2 mb-4">
                   <div className="flex justify-between">
                     <span>Subtotal</span>
-                    <span>${total.toFixed(2)}</span>
+                    <span>₹{total.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Tax (10%)</span>
-                    <span>${(total * 0.1).toFixed(2)}</span>
+                    <span>₹{(total * 0.1).toFixed(2)}</span>
                   </div>
                   <div className="border-t pt-2 mt-2">
                     <div className="flex justify-between font-semibold">
                       <span>Total</span>
-                      <span>${(total * 1.1).toFixed(2)}</span>
+                      <span>₹{(total * 1.1).toFixed(2)}</span>
                     </div>
                   </div>
                 </div>

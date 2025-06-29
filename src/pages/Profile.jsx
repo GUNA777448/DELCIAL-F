@@ -19,7 +19,22 @@ const Profile = () => {
       state: "",
       pincode: "",
     },
-    savedCards: [],
+    savedCards: [
+      {
+        brand: "Visa",
+        last4: "1234",
+        expMonth: "12",
+        expYear: "28",
+        name: "Guna Reddy",
+      },
+      {
+        brand: "MasterCard",
+        last4: "5678",
+        expMonth: "11",
+        expYear: "27",
+        name: "Guna Reddy",
+      },
+    ],
   });
 
   const [orders, setOrders] = useState([]);
@@ -28,11 +43,27 @@ const Profile = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    const localUser = localStorage.getItem("user");
+
     if (!token) {
       toast.error("Please login to view your profile");
       navigate("/login");
       return;
     }
+
+    if (localUser) {
+      const userData = JSON.parse(localUser);
+      setProfile((prev) => ({
+        ...prev,
+        name: userData.name || prev.name,
+        email: userData.email || prev.email,
+        profilePic:
+          userData.photoURL ||
+          prev.profilePic ||
+          "https://cdn.pixabay.com/photo/2021/11/24/05/19/user-6820232_1280.png",
+      }));
+    }
+
     fetchProfile(token);
     fetchOrders(token);
     // eslint-disable-next-line

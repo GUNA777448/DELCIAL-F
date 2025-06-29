@@ -49,7 +49,7 @@ function Checkout() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-rose-50 p-6 flex items-center justify-center">
+    <div className="min-h-screen bg-red-600 p-6 flex items-center justify-center">
       <div className="max-w-3xl w-full bg-white rounded-3xl shadow-2xl p-8 space-y-8">
         <h2 className="text-4xl font-bold text-center text-red-600">
           Checkout
@@ -58,7 +58,11 @@ function Checkout() {
         <div className="space-y-4">
           <h3 className="text-lg font-semibold">Delivery Address</h3>
           <div className="p-4 border rounded-lg text-gray-700 bg-gray-50">
-            123 Foodie Street, Biryani Nagar, Taste Town – 420001
+            <input
+              type="text"
+              className="w-full rounded-2xl p-2 bg-white text-stone-950  "
+              placeholder="Enter your address..."
+            />
           </div>
 
           <h3 className="text-lg font-semibold">Payment Options</h3>
