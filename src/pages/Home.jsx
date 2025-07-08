@@ -7,9 +7,9 @@ import Footer from "../components/Footer";
 const specialDishes = [
   {
     name: "Truffle Pasta",
-    description: "Homemade pasta with black truffle cream sauce.",
+    description: "Homemade pasta with black truffle cream sauce, served with seasonal vegetables.",
     image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTC_HNtzab6ojgN54e2XDDJ31nBF6n84Iulpg&s",
+      "https://www.tastingtable.com/img/gallery/irresistible-classic-truffle-cream-pasta-recipe/l-intro-1693236827.jpg",
   },
   {
     name: "Wood-Fired Pizza",
@@ -30,7 +30,7 @@ const specialDishes = [
     description:
       "Juicy beef patty, cheddar cheese, and house sauce on a brioche bun.",
     image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSADXnxv0ljfzD_a74LupI1L4KAFx0vvoBOCQ&s",
+      "https://images.squarespace-cdn.com/content/v1/5e808519a84d1844d8eb1aaf/1667831894344-ZHSRT08V5H7DH7F0HU2Y/shutterstock_1457602919-scaled-e1646652249561.jpg?format=1500w",
   },
   {
     name: "Vegan Buddha Bowl",
@@ -47,25 +47,26 @@ const specialDishes = [
   },
   {
     name: "Seafood Risotto",
-    description: "Creamy risotto with shrimp, scallops, and calamari.",
+    description: "Creamy risotto with shrimp, scallops, and calamari, served with seasonal vegetables.",
     image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDuHO2pr4fAnoKHrsudNl8g5vwgHqYIFKZzw&s",
+      "https://www.dimasharif.com/wp-content/uploads/2017/03/seafood-risotto-1.jpg",
   },
   {
     name: "Lamb Chops",
-    description: "Grilled lamb chops with rosemary and garlic.",
+    description: "Grilled lamb chops with rosemary and garlic, with garnished flavours",
     image:
-      "https://img.freepik.com/premium-photo/grilled-lamb-chops-delicious-view-turkish-name-kuzu-pirzola_693630-22051.jpg",
+      "https://d21klxpge3tttg.cloudfront.net/wp-content/uploads/2022/06/Greek-Grilled-Lamb-Chops-with-Smashed-Potatoes.jpg",
   },
   {
     name: "Stuffed Peppers",
-    description: "Bell peppers stuffed with rice, veggies, and cheese.",
+    //description: "Bell peppers stuffed with rice, veggies, and cheese,   ",
+    description: "Bell peppers stuffed with rice, veggies, and cheese, garnished with herbs and spices",
     image:
       "https://www.healthygreenkitchen.com/wp-content/uploads/2023/07/stuffed-bell-peppers-feature.jpg",
   },
   {
     name: "Chocolate Lava Cake",
-    description: "Warm chocolate cake with a gooey molten center.",
+    description: "Warm chocolate cake with a gooey molten center, garnished with vanilla ice cream",
     image:
       "https://www.melskitchencafe.com/wp-content/uploads/2023/01/updated-lava-cakes7.jpg",
   },
@@ -118,9 +119,9 @@ function Home() {
       {/* Hero Section with Carousel on Right */}
       <section className="mt-[20px] flex flex-col md:flex-row items-center justify-between px-4 sm:px-6 md:px-24 py-12 md:py-24 bg-gradient-to-r from-red-100 via-white to-orange-100">
         {/* Left: Hero Text */}
-        <div className="w-full md:max-w-xl animate-fadeIn flex-1 mb-10 md:mb-0 ">
-          <h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold mb-4 md:mb-6 text-red-700 drop-shadow-lg text-center md:text-left  ">
-            Welcome to Delicial!
+        <div className="w-full md:max-w-xl flex-1 mb-10 md:mb-0 sm:mt-[20px] md:mt-[100px]">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold mb-4 md:mb-6 text-red-700 drop-shadow-lg text-center md:text-left ">
+            Welcome to Delicial !
           </h1>
           <p className="text-base sm:text-lg md:text-xl mb-6 md:mb-8 text-gray-700 font-medium text-center md:text-left">
             Pre-order, pre-book, get delivery or takeaway. <br />

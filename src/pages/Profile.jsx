@@ -37,6 +37,9 @@ const Profile = () => {
     ],
   });
 
+  const [errors, setErrors] = useState({});
+  const [isEditing, setIsEditing] = useState(false);
+
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -71,7 +74,7 @@ const Profile = () => {
 
   const fetchProfile = async (token) => {
     try {
-      const res = await axios.get("/api/users/profile", {
+      const res = await axios.get("http://localhost:3000/api/users/profile", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setProfile((prev) => ({ ...prev, ...res.data }));
@@ -93,27 +96,81 @@ const Profile = () => {
     }
   };
 
+  const validateForm = () => {
+    const newErrors = {};
+
+    // Validate name
+    if (!profile.name.trim()) {
+      newErrors.name = "Name is required";
+    } else if (profile.name.trim().length < 2) {
+      newErrors.name = "Name must be at least 2 characters";
+    }
+
+    // Validate phone
+    if (profile.phone && profile.phone.length < 10) {
+      newErrors.phone = "Phone number must be at least 10 digits";
+    }
+
+    // Validate age
+    if (profile.age) {
+      const ageNum = parseInt(profile.age);
+      if (isNaN(ageNum) || ageNum < 1 || ageNum > 120) {
+        newErrors.age = "Age must be between 1 and 120";
+      }
+    }
+
+    // Validate gender
+    if (profile.gender && !['male', 'female', 'other', 'prefer not to say'].includes(profile.gender.toLowerCase())) {
+      newErrors.gender = "Please select a valid gender";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const updateProfile = async () => {
+    if (!validateForm()) {
+      toast.error("Please fix the errors before updating");
+      return;
+    }
+
     setLoading(true);
     const token = localStorage.getItem("token");
     try {
-      await axios.put(
-        "/api/users/profile",
+      const response = await axios.put(
+        "http://localhost:3000/api/users/profile",
         {
           name: profile.name,
           phone: profile.phone,
           gender: profile.gender,
           age: profile.age,
+          profilePic: profile.profilePic,
+          address: profile.address,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
 
-      toast.success("Profile updated 🎉");
+      toast.success("Profile updated successfully! 🎉");
+      
+      // Update localStorage with new user data
+      const localUser = localStorage.getItem("user");
+      if (localUser) {
+        const userData = JSON.parse(localUser);
+        const updatedUserData = { ...userData, ...response.data.user };
+        localStorage.setItem("user", JSON.stringify(updatedUserData));
+      }
+      
       await fetchProfile(token);
+      setIsEditing(false);
     } catch (err) {
-      toast.error("Update failed ❌");
+      console.error("Update error:", err);
+      if (err.response?.data?.message) {
+        toast.error(err.response.data.message);
+      } else {
+        toast.error("Update failed. Please try again.");
+      }
     }
     setLoading(false);
   };
@@ -143,62 +200,251 @@ const Profile = () => {
             </div>
 
             <div className="mt-8 space-y-4">
-              <input
-                type="text"
-                value={profile.name}
-                onChange={(e) =>
-                  setProfile((prev) => ({ ...prev, name: e.target.value }))
-                }
-                placeholder="Your Name"
-                className="w-full p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring"
-              />
+              {/* Edit/Cancel Buttons */}
+              <div className="flex gap-2 mb-4">
+                {!isEditing ? (
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-xl font-semibold transition duration-300"
+                  >
+                    ✏️ Edit Profile
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => {
+                        setIsEditing(false);
+                        setErrors({});
+                        // Reset form to original values
+                        fetchProfile(localStorage.getItem("token"));
+                      }}
+                      className="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-2 rounded-xl font-semibold transition duration-300"
+                    >
+                      ❌ Cancel
+                    </button>
+                    <button
+                      onClick={updateProfile}
+                      disabled={loading}
+                      className={`flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded-xl font-semibold transition duration-300 ${
+                        loading && "opacity-60 cursor-not-allowed"
+                      }`}
+                    >
+                      {loading ? "💾 Saving..." : "💾 Save Changes"}
+                    </button>
+                  </>
+                )}
+              </div>
 
-              <input
-                type="tel"
-                value={profile.phone}
-                onChange={(e) =>
-                  setProfile((prev) => ({ ...prev, phone: e.target.value }))
-                }
-                placeholder="Your Phone"
-                className="w-full p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring"
-              />
+              {/* Name Field */}
+              <div>
+                <label className="block text-gray-700 font-semibold mb-1">Name *</label>
+                <input
+                  type="text"
+                  value={profile.name}
+                  onChange={(e) => {
+                    setProfile((prev) => ({ ...prev, name: e.target.value }));
+                    if (errors.name) setErrors(prev => ({ ...prev, name: "" }));
+                  }}
+                  placeholder="Your Name"
+                  disabled={!isEditing}
+                  className={`w-full p-3 rounded-xl border focus:outline-none focus:ring transition ${
+                    errors.name 
+                      ? "border-red-500 focus:ring-red-300" 
+                      : "border-gray-300 focus:ring-blue-300"
+                  } ${!isEditing ? "bg-gray-100 cursor-not-allowed" : "bg-white"}`}
+                />
+                {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+              </div>
 
-              <input
-                type="text"
-                value={profile.gender}
-                onChange={(e) =>
-                  setProfile((prev) => ({ ...prev, gender: e.target.value }))
-                }
-                placeholder="Gender"
-                className="w-full p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring"
-              />
+              {/* Email Field */}
+              <div>
+                <label className="block text-gray-700 font-semibold mb-1">Email</label>
+                <input
+                  type="email"
+                  value={profile.email}
+                  disabled
+                  className="w-full p-3 rounded-xl bg-gray-200 text-gray-500 cursor-not-allowed border border-gray-300"
+                />
+                <p className="text-gray-500 text-sm mt-1">Email cannot be changed</p>
+              </div>
 
-              <input
-                type="number"
-                value={profile.age}
-                onChange={(e) =>
-                  setProfile((prev) => ({ ...prev, age: e.target.value }))
-                }
-                placeholder="Age"
-                className="w-full p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring"
-              />
+              {/* Phone Field */}
+              <div>
+                <label className="block text-gray-700 font-semibold mb-1">Phone</label>
+                <input
+                  type="tel"
+                  value={profile.phone}
+                  onChange={(e) => {
+                    setProfile((prev) => ({ ...prev, phone: e.target.value }));
+                    if (errors.phone) setErrors(prev => ({ ...prev, phone: "" }));
+                  }}
+                  placeholder="Your Phone Number"
+                  disabled={!isEditing}
+                  className={`w-full p-3 rounded-xl border focus:outline-none focus:ring transition ${
+                    errors.phone 
+                      ? "border-red-500 focus:ring-red-300" 
+                      : "border-gray-300 focus:ring-blue-300"
+                  } ${!isEditing ? "bg-gray-100 cursor-not-allowed" : "bg-white"}`}
+                />
+                {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
+              </div>
 
-              <input
-                type="email"
-                value={profile.email}
-                disabled
-                className="w-full p-3 rounded-xl bg-gray-200 text-gray-500 cursor-not-allowed"
-              />
+              {/* Gender Field */}
+              <div>
+                <label className="block text-gray-700 font-semibold mb-1">Gender</label>
+                <select
+                  value={profile.gender}
+                  onChange={(e) => {
+                    setProfile((prev) => ({ ...prev, gender: e.target.value }));
+                    if (errors.gender) setErrors(prev => ({ ...prev, gender: "" }));
+                  }}
+                  disabled={!isEditing}
+                  className={`w-full p-3 rounded-xl border focus:outline-none focus:ring transition ${
+                    errors.gender 
+                      ? "border-red-500 focus:ring-red-300" 
+                      : "border-gray-300 focus:ring-blue-300"
+                  } ${!isEditing ? "bg-gray-100 cursor-not-allowed" : "bg-white"}`}
+                >
+                  <option value="">Select Gender</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                  <option value="prefer not to say">Prefer not to say</option>
+                </select>
+                {errors.gender && <p className="text-red-500 text-sm mt-1">{errors.gender}</p>}
+              </div>
 
-              <button
-                onClick={updateProfile}
-                disabled={loading}
-                className={`w-full bg-red-700 hover:bg-red-800 text-white py-3 rounded-xl font-semibold text-lg transition duration-300 ${
-                  loading && "opacity-60 cursor-not-allowed"
-                }`}
-              >
-                {loading ? "Updating..." : "Update Profile"}
-              </button>
+              {/* Age Field */}
+              <div>
+                <label className="block text-gray-700 font-semibold mb-1">Age</label>
+                <input
+                  type="number"
+                  value={profile.age}
+                  onChange={(e) => {
+                    setProfile((prev) => ({ ...prev, age: e.target.value }));
+                    if (errors.age) setErrors(prev => ({ ...prev, age: "" }));
+                  }}
+                  placeholder="Your Age"
+                  min="1"
+                  max="120"
+                  disabled={!isEditing}
+                  className={`w-full p-3 rounded-xl border focus:outline-none focus:ring transition ${
+                    errors.age 
+                      ? "border-red-500 focus:ring-red-300" 
+                      : "border-gray-300 focus:ring-blue-300"
+                  } ${!isEditing ? "bg-gray-100 cursor-not-allowed" : "bg-white"}`}
+                />
+                {errors.age && <p className="text-red-500 text-sm mt-1">{errors.age}</p>}
+              </div>
+
+              {/* Profile Picture URL */}
+              <div>
+                <label className="block text-gray-700 font-semibold mb-1">Profile Picture URL</label>
+                <input
+                  type="url"
+                  value={profile.profilePic}
+                  onChange={(e) => setProfile((prev) => ({ ...prev, profilePic: e.target.value }))}
+                  placeholder="https://example.com/photo.jpg"
+                  disabled={!isEditing}
+                  className={`w-full p-3 rounded-xl border focus:outline-none focus:ring transition ${
+                    "border-gray-300 focus:ring-blue-300"
+                  } ${!isEditing ? "bg-gray-100 cursor-not-allowed" : "bg-white"}`}
+                />
+              </div>
+
+              {/* Address Section */}
+              <div className="border-t pt-4 mt-4">
+                <h4 className="text-lg font-semibold text-gray-800 mb-3">Address Information</h4>
+                
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-gray-700 font-semibold mb-1">Address Line 1</label>
+                    <input
+                      type="text"
+                      value={profile.address?.line1 || ""}
+                      onChange={(e) => setProfile((prev) => ({
+                        ...prev,
+                        address: { ...prev.address, line1: e.target.value }
+                      }))}
+                      placeholder="Street Address"
+                      disabled={!isEditing}
+                      className={`w-full p-3 rounded-xl border focus:outline-none focus:ring transition ${
+                        "border-gray-300 focus:ring-blue-300"
+                      } ${!isEditing ? "bg-gray-100 cursor-not-allowed" : "bg-white"}`}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 font-semibold mb-1">Address Line 2</label>
+                    <input
+                      type="text"
+                      value={profile.address?.line2 || ""}
+                      onChange={(e) => setProfile((prev) => ({
+                        ...prev,
+                        address: { ...prev.address, line2: e.target.value }
+                      }))}
+                      placeholder="Apartment, suite, etc. (optional)"
+                      disabled={!isEditing}
+                      className={`w-full p-3 rounded-xl border focus:outline-none focus:ring transition ${
+                        "border-gray-300 focus:ring-blue-300"
+                      } ${!isEditing ? "bg-gray-100 cursor-not-allowed" : "bg-white"}`}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-1">City</label>
+                      <input
+                        type="text"
+                        value={profile.address?.city || ""}
+                        onChange={(e) => setProfile((prev) => ({
+                          ...prev,
+                          address: { ...prev.address, city: e.target.value }
+                        }))}
+                        placeholder="City"
+                        disabled={!isEditing}
+                        className={`w-full p-3 rounded-xl border focus:outline-none focus:ring transition ${
+                          "border-gray-300 focus:ring-blue-300"
+                        } ${!isEditing ? "bg-gray-100 cursor-not-allowed" : "bg-white"}`}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-1">State</label>
+                      <input
+                        type="text"
+                        value={profile.address?.state || ""}
+                        onChange={(e) => setProfile((prev) => ({
+                          ...prev,
+                          address: { ...prev.address, state: e.target.value }
+                        }))}
+                        placeholder="State"
+                        disabled={!isEditing}
+                        className={`w-full p-3 rounded-xl border focus:outline-none focus:ring transition ${
+                          "border-gray-300 focus:ring-blue-300"
+                        } ${!isEditing ? "bg-gray-100 cursor-not-allowed" : "bg-white"}`}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 font-semibold mb-1">Pincode</label>
+                    <input
+                      type="text"
+                      value={profile.address?.pincode || ""}
+                      onChange={(e) => setProfile((prev) => ({
+                        ...prev,
+                        address: { ...prev.address, pincode: e.target.value }
+                      }))}
+                      placeholder="Pincode"
+                      disabled={!isEditing}
+                      className={`w-full p-3 rounded-xl border focus:outline-none focus:ring transition ${
+                        "border-gray-300 focus:ring-blue-300"
+                      } ${!isEditing ? "bg-gray-100 cursor-not-allowed" : "bg-white"}`}
+                    />
+                  </div>
+                </div>
+              </div>
 
               <Link
                 to="/"

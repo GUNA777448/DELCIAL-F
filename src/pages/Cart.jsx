@@ -47,8 +47,8 @@ function Cart() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-yellow-50">
-      <Navbar />
-      <div className="container mx-auto px-4 py-8">
+      <Navbar />  
+      <div className="container mx-auto px-4 py-8 pt-24">
         <h1 className="text-3xl font-bold text-center text-red-700 mb-8">
           Your Cart
         </h1>
