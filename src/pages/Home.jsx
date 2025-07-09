@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import Navbar from "../components/navbar";
 import Footer from "../components/Footer";
+import { motion, AnimatePresence } from "framer-motion";
 
 // 10 Special Dishes Data
 const specialDishes = [
@@ -133,8 +134,10 @@ function Home() {
             </span>
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-            <a
-              href="/menu"
+            <NavLink
+              to="/menu"
+              whileTap={{ scale: 0.92 }}
+              whileHover={{ scale: 1.07 }}
               className="
                 bg-red-600
                 text-white
@@ -153,13 +156,15 @@ function Home() {
                 hover:bg-white
                 hover:text-red-600
                 hover:border-black
-                
+                hover:rounded-full
               "
             >
               Order Now
-            </a>
-            <a
-              href="/reservation"
+            </NavLink>
+            <NavLink
+              to="/reservation"
+              whileTap={{ scale: 0.92 }}
+              whileHover={{ scale: 1.07 }}
               className="
                 bg-white
                 border-2
@@ -178,11 +183,11 @@ function Home() {
                 hover:bg-red-600
                 hover:text-white
                 hover:border-red-600
-                
+                hover:rounded-full
               "
             >
               Book a Table
-            </a>
+            </NavLink>
           </div>
         </div>
         {/* Right: Carousel */}
