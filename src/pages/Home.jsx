@@ -7,66 +7,69 @@ import Footer from "../components/Footer";
 const specialDishes = [
   {
     name: "Truffle Pasta",
-    description: "Homemade pasta with black truffle cream sauce, served with seasonal vegetables.",
+    description:
+      "Creamy black truffle sauce on homemade pasta, spinach, and parmesan.",
     image:
       "https://www.tastingtable.com/img/gallery/irresistible-classic-truffle-cream-pasta-recipe/l-intro-1693236827.jpg",
   },
   {
     name: "Wood-Fired Pizza",
-    description:
-      "Classic margherita with San Marzano tomatoes and buffalo mozzarella.",
+    description: "Classic margherita with San Marzano tomatoes and mozzarella.",
     image:
       "https://popmenucloud.com/cdn-cgi/image/width%3D1200%2Cheight%3D1200%2Cfit%3Dscale-down%2Cformat%3Dauto%2Cquality%3D60/pwxhmyfv/ff08ff76-82fc-4acd-b225-d03fb6b82b1f.jpg",
   },
   {
     name: "Grilled Salmon",
     description:
-      "Fresh salmon fillet with lemon-dill sauce, served with seasonal vegetables.",
+      "Salmon fillet with lemon-dill sauce and veggies, served with rice.",
     image:
       "https://www.budgetbytes.com/wp-content/uploads/2024/06/Grilled-Salmon-Overhead.jpg",
   },
   {
     name: "Signature Burger",
     description:
-      "Juicy beef patty, cheddar cheese, and house sauce on a brioche bun.",
+      "Juicy beef patty, cheddar, house sauce, brioche bun, and fries.",
     image:
       "https://images.squarespace-cdn.com/content/v1/5e808519a84d1844d8eb1aaf/1667831894344-ZHSRT08V5H7DH7F0HU2Y/shutterstock_1457602919-scaled-e1646652249561.jpg?format=1500w",
   },
   {
     name: "Vegan Buddha Bowl",
     description:
-      "A nourishing bowl with quinoa, roasted veggies, and tahini dressing.",
+      "Quinoa, roasted veggies, tahini dressing, fresh herbs, and hummus.",
     image:
       "https://cdn.loveandlemons.com/wp-content/uploads/2020/06/IMG_25456.jpg",
   },
   {
     name: "Chicken Parmesan",
-    description: "Breaded chicken breast topped with marinara and mozzarella.",
+    description: "Breaded chicken, marinara, mozzarella, spaghetti, and sauce.",
     image:
       "https://www.southernliving.com/thmb/rQaGDkAPGa_MeU4eglrAaeuexjg=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/southern-living-chicken-parmesan-ddmfs-0047-fe218cb392784e79bfb4bb586685d6f9.jpg",
   },
   {
     name: "Seafood Risotto",
-    description: "Creamy risotto with shrimp, scallops, and calamari, served with seasonal vegetables.",
+    description:
+      "Creamy risotto with shrimp, scallops, and herbs, finished with parmesan.",
     image:
       "https://www.dimasharif.com/wp-content/uploads/2017/03/seafood-risotto-1.jpg",
   },
   {
     name: "Lamb Chops",
-    description: "Grilled lamb chops with rosemary and garlic, with garnished flavours",
+    description:
+      "Grilled lamb chops with rosemary and garlic, served with smashed potatoes.",
     image:
       "https://d21klxpge3tttg.cloudfront.net/wp-content/uploads/2022/06/Greek-Grilled-Lamb-Chops-with-Smashed-Potatoes.jpg",
   },
   {
     name: "Stuffed Peppers",
-    //description: "Bell peppers stuffed with rice, veggies, and cheese,   ",
-    description: "Bell peppers stuffed with rice, veggies, and cheese, garnished with herbs and spices",
+    description:
+      "Bell peppers stuffed with rice, veggies, and cheese, served with sauce.",
     image:
       "https://www.healthygreenkitchen.com/wp-content/uploads/2023/07/stuffed-bell-peppers-feature.jpg",
   },
   {
     name: "Chocolate Lava Cake",
-    description: "Warm chocolate cake with a gooey molten center, garnished with vanilla ice cream",
+    description:
+      "Warm chocolate cake with a gooey molten center, served with ice cream.",
     image:
       "https://www.melskitchencafe.com/wp-content/uploads/2023/01/updated-lava-cakes7.jpg",
   },
@@ -76,7 +79,7 @@ const specialDishes = [
 const testimonials = [
   {
     name: "Priya Sharma",
-    text: "Pre-ordering was so easy! The food was delicious and the table was ready when we arrived.",
+    text: "Pre-ordering was so easy! The food was delicious and the table was ready when we arrived,",
     image: "https://randomuser.me/api/portraits/women/44.jpg",
   },
   {
@@ -117,11 +120,11 @@ function Home() {
       <Navbar />
 
       {/* Hero Section with Carousel on Right */}
-      <section className="mt-[20px] flex flex-col md:flex-row items-center justify-between px-4 sm:px-6 md:px-24 py-12 md:py-24 bg-gradient-to-r from-red-100 via-white to-orange-100">
+      <section className="pt-24 mt-[20px] flex flex-col md:flex-row items-center justify-between px-4 sm:px-6 md:px-24 py-12 md:py-24 bg-gradient-to-r from-red-100 via-white to-orange-100">
         {/* Left: Hero Text */}
-        <div className="w-full md:max-w-xl flex-1 mb-10 md:mb-0 sm:mt-[20px] md:mt-[100px]">
+        <div className="w-full md:max-w-xl flex-1 mb-10 md:mb-0">
           <h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold mb-4 md:mb-6 text-red-700 drop-shadow-lg text-center md:text-left ">
-            Welcome to Delicial !
+            Welcome to Delicial!
           </h1>
           <p className="text-base sm:text-lg md:text-xl mb-6 md:mb-8 text-gray-700 font-medium text-center md:text-left">
             Pre-order, pre-book, get delivery or takeaway. <br />
@@ -150,7 +153,7 @@ function Home() {
                 hover:bg-white
                 hover:text-red-600
                 hover:border-black
-                hover:rounded-full
+                
               "
             >
               Order Now
@@ -175,7 +178,7 @@ function Home() {
                 hover:bg-red-600
                 hover:text-white
                 hover:border-red-600
-                hover:rounded-full
+                
               "
             >
               Book a Table
@@ -186,14 +189,14 @@ function Home() {
         <div className="relative w-full max-w-lg sm:max-w-xl md:max-w-2xl overflow-hidden rounded-3xl">
           {/* Carousel Track */}
           <div
-            className="flex transition-transform duration-500"
+            className="flex items-stretch transition-transform duration-500 h-full"
             style={{ transform: `translateX(-${current * 100}%)` }}
           >
             {specialDishes.map((dish, idx) => (
-              <div key={idx} className="w-full flex-shrink-0">
-                <div className="bg-white rounded-3xl shadow-xl flex flex-col items-center overflow-hidden">
+              <div key={idx} className="w-full flex-shrink-0 h-full">
+                <div className="bg-white rounded-3xl shadow-xl flex flex-col h-full w-full overflow-hidden">
                   {/* Image */}
-                  <div className="w-full h-40 sm:h-64 md:h-80 overflow-hidden">
+                  <div className="w-full h-40 sm:h-64 md:h-80 overflow-hidden flex-shrink-0">
                     <img
                       src={dish.image}
                       alt={dish.name}
@@ -201,7 +204,7 @@ function Home() {
                     />
                   </div>
                   {/* Info */}
-                  <div className="p-4 sm:p-8 w-full flex flex-col items-center">
+                  <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6">
                     <h3 className="text-lg sm:text-2xl font-semibold text-red-700 mb-1 sm:mb-2 text-center">
                       {dish.name}
                     </h3>
