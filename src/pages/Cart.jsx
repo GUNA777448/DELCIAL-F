@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import axios from "axios";
 import Navbar from "../components/navbar";
 import { FaTrash, FaMinus, FaPlus } from "react-icons/fa";
 
@@ -7,13 +9,58 @@ function Cart() {
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState([]);
   const [total, setTotal] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  // Check authentication and fetch cart data
   useEffect(() => {
-    const storedCart = localStorage.getItem("cart");
-    if (storedCart) {
-      setCartItems(JSON.parse(storedCart));
-    }
-  }, []);
+    const checkAuthAndFetchCart = async () => {
+      const token = localStorage.getItem("token");
+      const user = localStorage.getItem("user");
+      
+      if (!token || !user) {
+        toast.error("Please login to view your cart");
+        navigate("/login");
+        return;
+      }
+
+      setIsAuthenticated(true);
+      
+      try {
+        const response = await axios.get("http://localhost:3000/api/cart", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.data && response.data.items) {
+          setCartItems(response.data.items);
+        } else {
+          setCartItems([]);
+        }
+      } catch (error) {
+        console.error("Error fetching cart:", error);
+        
+        if (error.response?.status === 401) {
+          toast.error("Session expired. Please login again.");
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          navigate("/login");
+        } else {
+          toast.error("Failed to load cart. Please try again.");
+          // Fallback to localStorage cart
+          const storedCart = localStorage.getItem("cart");
+          if (storedCart) {
+            setCartItems(JSON.parse(storedCart));
+          }
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuthAndFetchCart();
+  }, [navigate]);
 
   useEffect(() => {
     const newTotal = cartItems.reduce(
@@ -23,27 +70,131 @@ function Cart() {
     setTotal(newTotal);
   }, [cartItems]);
 
-  const updateQuantity = (id, change) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) => {
-        if (item.id === id) {
-          const newQuantity = Math.max(1, item.quantity + change);
-          return { ...item, quantity: newQuantity };
+  const updateQuantity = async (productId, change) => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    const item = cartItems.find(item => item.productId === productId);
+    if (!item) return;
+
+    const newQuantity = Math.max(1, item.quantity + change);
+    
+    try {
+      // Remove the item first
+      await axios.put(
+        "http://localhost:3000/api/cart/remove",
+        { productId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-        return item;
-      })
-    );
+      );
+
+      // Add it back with new quantity
+      await axios.post(
+        "http://localhost:3000/api/cart/add",
+        {
+          productId,
+          name: item.name,
+          price: item.price,
+          quantity: newQuantity,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Update local state
+      setCartItems(prevItems =>
+        prevItems.map(item => 
+          item.productId === productId 
+            ? { ...item, quantity: newQuantity }
+            : item
+        )
+      );
+
+      toast.success("Cart updated successfully");
+    } catch (error) {
+      console.error("Error updating quantity:", error);
+      toast.error("Failed to update quantity. Please try again.");
+    }
   };
 
-  const removeItem = (id) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
+  const removeItem = async (productId) => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      await axios.put(
+        "http://localhost:3000/api/cart/remove",
+        { productId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setCartItems(prevItems => 
+        prevItems.filter(item => item.productId !== productId)
+      );
+
+      toast.success("Item removed from cart");
+    } catch (error) {
+      console.error("Error removing item:", error);
+      toast.error("Failed to remove item. Please try again.");
+    }
+  };
+
+  const clearCart = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      await axios.delete("http://localhost:3000/api/cart/clear", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setCartItems([]);
+      toast.success("Cart cleared successfully");
+    } catch (error) {
+      console.error("Error clearing cart:", error);
+      toast.error("Failed to clear cart. Please try again.");
+    }
   };
 
   const handleCheckout = () => {
-    // Clear cart and redirect to home
-    localStorage.removeItem("cart");
+    if (cartItems.length === 0) {
+      toast.error("Your cart is empty");
+      return;
+    }
+    
+    // Clear cart and redirect to payment
+    clearCart();
     navigate("/Payment");
   };
+
+  // Show loading while checking auth and fetching cart
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-yellow-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading your cart...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render if not authenticated
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-yellow-50">
@@ -67,14 +218,23 @@ function Cart() {
             {/* Cart Items */}
             <div className="lg:col-span-2">
               <div className="bg-white rounded-xl shadow-lg p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-semibold">Cart Items</h2>
+                  <button
+                    onClick={clearCart}
+                    className="text-red-600 hover:text-red-700 text-sm font-medium"
+                  >
+                    Clear Cart
+                  </button>
+                </div>
                 {cartItems.map((item) => (
                   <div
-                    key={item.id}
+                    key={item.productId}
                     className="flex items-center justify-between py-4 border-b last:border-b-0"
                   >
                     <div className="flex items-center space-x-4">
                       <img
-                        src={item.image}
+                        src={item.image || "https://via.placeholder.com/80x80?text=Food"}
                         alt={item.name}
                         className="w-20 h-20 object-cover rounded-lg"
                       />
@@ -86,21 +246,21 @@ function Cart() {
                     <div className="flex items-center space-x-4">
                       <div className="flex items-center space-x-2">
                         <button
-                          onClick={() => updateQuantity(item.id, -1)}
+                          onClick={() => updateQuantity(item.productId, -1)}
                           className="p-1 rounded-full hover:bg-gray-100"
                         >
                           <FaMinus className="text-red-600" />
                         </button>
                         <span className="w-8 text-center">{item.quantity}</span>
                         <button
-                          onClick={() => updateQuantity(item.id, 1)}
+                          onClick={() => updateQuantity(item.productId, 1)}
                           className="p-1 rounded-full hover:bg-gray-100"
                         >
                           <FaPlus className="text-red-600" />
                         </button>
                       </div>
                       <button
-                        onClick={() => removeItem(item.id)}
+                        onClick={() => removeItem(item.productId)}
                         className="p-2 text-red-600 hover:bg-red-50 rounded-full"
                       >
                         <FaTrash />

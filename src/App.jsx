@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 import Home from "./pages/Home";
 import Menu from "./pages/Menu";
 import Login from "./pages/Login";
@@ -41,20 +42,46 @@ function App() {
   }
 
   return (
-    <Routes>
-      <Route path="/pay" element={<PaymentPage />} />
-      <Route path="/" element={<Home />} />
-      <Route path="/menu" element={<Menu />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
-      <Route path="/cart" element={<Cart />} />
-      <Route path="/reservation" element={<Reserve />} />
-      <Route path="/about" element={<About />} />
-      <Route path="/contact" element={<Contact />} />
-      <Route path="/Payment" element={<Checkout />} />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/admin" element={<AdminDashboard />} />
-    </Routes>
+    <>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: '#363636',
+            color: '#fff',
+          },
+          success: {
+            duration: 3000,
+            iconTheme: {
+              primary: '#4ade80',
+              secondary: '#fff',
+            },
+          },
+          error: {
+            duration: 4000,
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#fff',
+            },
+          },
+        }}
+      />
+      <Routes>
+        <Route path="/pay" element={<PaymentPage />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/menu" element={<Menu />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/reservation" element={<Reserve />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/Payment" element={<Checkout />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+      </Routes>
+    </>
   );
 }
 

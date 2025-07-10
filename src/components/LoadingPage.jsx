@@ -28,7 +28,7 @@ const LoadingPage = ({ onLoadingComplete }) => {
         // Wait a moment then complete loading
         setTimeout(() => {
           onLoadingComplete();
-        }, 1000);
+        }, 1500);
       }
     }, 800);
 

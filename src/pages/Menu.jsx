@@ -353,9 +353,9 @@ const menuItems = [
     isSweet: true,
   },
   {
-    name: "Choco Sandwhich",
+    name: "Choco Sandwich",
     price: 150,
-    desc: "Creamy milkshake with choice of flavors",
+    desc: "Chocolate ice cream between two crispy wafers",
     img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBhU2HfjmdP-lt51gfYH9-JYMsqeD2Fmfb-Q&s",
     category: "Icecreams",
     isVeg: true,
@@ -364,9 +364,9 @@ const menuItems = [
     isSweet: true,
   },
   {
-    name: "delicial cone",
+    name: "Delicial Cone",
     price: 150,
-    desc: "Creamy milkshake with choice of flavors",
+    desc: "Classic waffle cone with vanilla ice cream",
     img: "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/recipe-image-legacy-id-560491_11-8342908.jpg?resize=768,574",
     category: "Icecreams",
     isVeg: true,
@@ -375,9 +375,9 @@ const menuItems = [
     isSweet: true,
   },
   {
-    name: "Scoopes ",
+    name: "Scoopes",
     price: 150,
-    desc: "Creamy milkshake with choice of flavors",
+    desc: "Classic vanilla ice cream scoops with chocolate sauce",
     img: "https://funcakes.com/content/uploads/2023/06/Ice-cream-recipe-960x540-c-default.jpg",
     category: "Icecreams",
     isVeg: true,
@@ -385,6 +385,41 @@ const menuItems = [
     isChill: true,
     isSweet: true,
   },
+  {
+    name: "Strawberry Sundae",
+    price: 180,
+    desc: "Fresh strawberry ice cream with whipped cream and cherry",
+    img: "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=800&auto=format&fit=crop&q=60",
+    category: "Icecreams",
+    isVeg: true,
+    isSpicy: false,
+    isChill: true,
+    isSweet: true,
+  },
+  {
+    name: "Chocolate Fudge",
+    price: 170,
+    desc: "Rich chocolate ice cream with hot fudge sauce",
+    img: "https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=800&auto=format&fit=crop&q=60",
+    category: "Icecreams",
+    isVeg: true,
+    isSpicy: false,
+    isChill: true,
+    isSweet: true,
+  },
+  {
+    name: "Mint Chocolate Chip",
+    price: 160,
+    desc: "Refreshing mint ice cream with chocolate chips",
+    img: "https://www.whitakerschocolates.com/cdn/shop/articles/Who-Invented-Mint-Chocolate-Chip-Ice-Cream1.jpg?v=1715958834",
+    category: "Icecreams",
+    isVeg: true,
+    isSpicy: false,
+    isChill: true,
+    isSweet: true,
+  },
+  
+
 ];
 
 const Menu = () => {

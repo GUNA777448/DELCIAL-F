@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaShoppingCart } from "react-icons/fa";
+import { toast } from "react-hot-toast";
+import axios from "axios";
 
 const MenuCard = ({
   name,
@@ -12,41 +15,93 @@ const MenuCard = ({
   isChill,
   isSweet,
 }) => {
-  const addToCart = () => {
-    // Get existing cart items from localStorage
-    const existingCart = JSON.parse(localStorage.getItem("cart") || "[]");
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const navigate = useNavigate();
 
-    // Check if item already exists in cart
-    const existingItemIndex = existingCart.findIndex(
-      (item) => item.name === name
-    );
+  // Check if user is authenticated
+  const isAuthenticated = localStorage.getItem("token") && localStorage.getItem("user");
 
-    if (existingItemIndex >= 0) {
-      // If item exists, increase quantity
-      existingCart[existingItemIndex].quantity += 1;
-    } else {
-      // If item doesn't exist, add new item
-      existingCart.push({
-        id: Date.now(), // Generate unique ID
-        name,
-        price,
-        image: img,
-        quantity: 1,
-      });
+  const addToCart = async () => {
+    const token = localStorage.getItem("token");
+    const user = localStorage.getItem("user");
+    
+    // Check if user is authenticated
+    if (!token || !user) {
+      toast.error("Please login to add items to cart");
+      navigate("/login");
+      return;
     }
 
-    // Save updated cart to localStorage
-    localStorage.setItem("cart", JSON.stringify(existingCart));
+    setIsAddingToCart(true);
 
-    // Show success message
-    alert(`${name} added to cart!`);
+    try {
+      // Generate a unique product ID (in a real app, this would come from the backend)
+      const productId = `product_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      const response = await axios.post(
+        "http://localhost:3000/api/cart/add",
+        {
+          productId,
+          name,
+          price,
+          quantity: 1,
+          image: img,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        toast.success(`${name} added to cart!`);
+        
+        // Also update localStorage for immediate UI updates
+        const existingCart = JSON.parse(localStorage.getItem("cart") || "[]");
+        const existingItemIndex = existingCart.findIndex(
+          (item) => item.name === name
+        );
+
+        if (existingItemIndex >= 0) {
+          existingCart[existingItemIndex].quantity += 1;
+        } else {
+          existingCart.push({
+            id: productId,
+            name,
+            price,
+            image: img,
+            quantity: 1,
+          });
+        }
+
+        localStorage.setItem("cart", JSON.stringify(existingCart));
+      }
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      
+      if (error.response?.status === 401) {
+        toast.error("Session expired. Please login again.");
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        navigate("/login");
+      } else if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("Failed to add item to cart. Please try again.");
+      }
+    } finally {
+      setIsAddingToCart(false);
+    }
   };
 
   return (
     <motion.div
       whileHover={{ y: -5 }}
-      className="bg-[#fffbff] rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-[#f1dabf]"
+      className="bg-[#fffbff] rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-[#f1dabf] relative"
     >
+    
       <div className="relative">
         <img src={img} alt={name} className="w-full h-48 object-cover" />
         <div className="absolute top-2 right-2 flex gap-2">
@@ -82,10 +137,17 @@ const MenuCard = ({
         <div className="flex justify-end items-center gap-4">
           <button
             onClick={addToCart}
-            className="text-[#362417] hover:text-[#92817a] transition p-2"
-            title="Add to Cart"
+            disabled={isAddingToCart}
+            className={`text-[#362417] hover:text-[#92817a] transition p-2 ${
+              isAddingToCart ? "opacity-50 cursor-not-allowed" : ""
+            } ${!isAuthenticated ? "opacity-60" : ""}`}
+            title={!isAuthenticated ? "Login required to add to cart" : "Add to Cart"}
           >
-            <FaShoppingCart className="h-6 w-6" />
+            {isAddingToCart ? (
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#362417]"></div>
+            ) : (
+              <FaShoppingCart className="h-6 w-6" />
+            )}
           </button>
           <button className="text-[#362417] hover:text-[#92817a] transition p-2">
             <svg
