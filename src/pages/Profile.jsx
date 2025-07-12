@@ -89,7 +89,7 @@ const Profile = () => {
 
   const fetchOrders = async (token) => {
     try {
-      const res = await axios.get("/orders/mine", {
+      const res = await axios.get("/orders/my", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = res.data;
