@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaGoogle, FaLinkedin, FaEye, FaEyeSlash } from "react-icons/fa";
-import axios from "axios";
+import axios from "../utils/axios";
 import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../firebase"; // ✅ adjust path if needed
 
@@ -35,10 +35,7 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/auth/login",
-        formData
-      );
+      const response = await axios.post("/auth/login", formData);
       const { token, name, email } = response.data;
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify({ name, email }));

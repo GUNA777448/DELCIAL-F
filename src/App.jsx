@@ -16,6 +16,7 @@ import Checkout from "./pages/Payment";
 import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/Admin";
 import LoadingPage from "./components/LoadingPage";
+import OrderSuccess from "./pages/OrderSuccess";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -80,6 +81,7 @@ function App() {
         <Route path="/Payment" element={<Checkout />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/order-success" element={<OrderSuccess />} />
       </Routes>
     </>
   );

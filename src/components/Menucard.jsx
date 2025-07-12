@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaShoppingCart } from "react-icons/fa";
 import { toast } from "react-hot-toast";
-import axios from "axios";
+import axios from "../utils/axios";
 
 const MenuCard = ({
   name,
@@ -39,7 +39,7 @@ const MenuCard = ({
       const productId = `product_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       
       const response = await axios.post(
-        "http://localhost:3000/api/cart/add",
+        "/cart/add",
         {
           productId,
           name,

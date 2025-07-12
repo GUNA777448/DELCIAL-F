@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaGoogle, FaGithub } from "react-icons/fa";
-import axios from "axios";
+import axios from "../utils/axios";
 function Signup() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -23,19 +23,11 @@ function Signup() {
     }
 
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/auth/signup",
-        {
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await axios.post("/auth/signup", {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+      });
       console.log("Sending data to server:", {
         name: formData.name,
         email: formData.email,

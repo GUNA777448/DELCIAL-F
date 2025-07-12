@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { FaUtensils } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import Navbar from "../components/navbar";
-import axios from "axios";
+import axios from "../utils/axios";
 import { toast } from "react-hot-toast"; // Optional, but clean AF for alerts
 
 const restaurants = [
@@ -54,7 +54,7 @@ function Reserve() {
         }
 
         // Then fetch from server for complete profile
-        const response = await axios.get("http://localhost:3000/api/users/profile", {
+        const response = await axios.get("/users/profile", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -79,9 +79,9 @@ function Reserve() {
       const token = localStorage.getItem("token");
       if (token) {
         try {
-          const response = await axios.get("http://localhost:3000/api/reservations", {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+                  const response = await axios.get("/reservations", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
           setUserReservations(response.data.data || []);
         } catch (error) {
           console.log("Could not fetch reservations:", error.message);
@@ -108,7 +108,7 @@ function Reserve() {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.post(
-        "http://localhost:3000/api/reservations",
+        "/reservations",
         {
           restaurant: form.restaurant,
           name: form.name,
@@ -135,7 +135,7 @@ function Reserve() {
         const token = localStorage.getItem("token");
         if (token) {
           try {
-            const reservationsResponse = await axios.get("http://localhost:3000/api/reservations/my-reservations", {
+            const reservationsResponse = await axios.get("/reservations/my-reservations", {
               headers: { Authorization: `Bearer ${token}` },
             });
             setUserReservations(reservationsResponse.data.data || []);

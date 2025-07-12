@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import axios from "axios";
+import axios from "../utils/axios";
 import Navbar from "../components/navbar";
 import { FaTrash, FaMinus, FaPlus } from "react-icons/fa";
 
@@ -27,7 +27,7 @@ function Cart() {
       setIsAuthenticated(true);
       
       try {
-        const response = await axios.get("http://localhost:3000/api/cart", {
+        const response = await axios.get("/cart", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -82,7 +82,7 @@ function Cart() {
     try {
       // Remove the item first
       await axios.put(
-        "http://localhost:3000/api/cart/remove",
+        "/cart/remove",
         { productId },
         {
           headers: {
@@ -93,7 +93,7 @@ function Cart() {
 
       // Add it back with new quantity
       await axios.post(
-        "http://localhost:3000/api/cart/add",
+        "/cart/add",
         {
           productId,
           name: item.name,
@@ -129,7 +129,7 @@ function Cart() {
 
     try {
       await axios.put(
-        "http://localhost:3000/api/cart/remove",
+        "/cart/remove",
         { productId },
         {
           headers: {
@@ -154,7 +154,7 @@ function Cart() {
     if (!token) return;
 
     try {
-      await axios.delete("http://localhost:3000/api/cart/clear", {
+      await axios.delete("/cart/clear", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -169,6 +169,7 @@ function Cart() {
   };
 
   const handleCheckout = () => {
+    console.log("cartItems", cartItems);
     if (cartItems.length === 0) {
       toast.error("Your cart is empty");
       return;

@@ -1,8 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaRupeeSign, FaTruck, FaCreditCard, FaMapMarkerAlt, FaUser, FaPhone, FaEnvelope, FaCheck, FaSpinner } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import { loadScript } from "../loadRazorpay";
+import { useNavigate } from "react-router-dom";
+import axios from "../utils/axios";
 
 // Order Summary Component
 const OrderSummary = ({ items, total, tax, finalTotal }) => {
@@ -307,8 +309,10 @@ const ConfirmButton = ({ onConfirm, loading, disabled, total }) => {
 
 // Main Checkout Component
 function Checkout() {
+  const navigate = useNavigate();
   const [selectedPayment, setSelectedPayment] = useState("");
   const [loading, setLoading] = useState(false);
+  const [cartLoading, setCartLoading] = useState(true);
   const [address, setAddress] = useState({
     name: "",
     phone: "",
@@ -318,16 +322,111 @@ function Checkout() {
     pincode: ""
   });
   const [errors, setErrors] = useState({});
+  const mountedRef = useRef(true);
+  const cartFetchedRef = useRef(false);
 
-  // Mock cart data - replace with actual cart data
-  const cartItems = [
-    { name: "Butter Chicken", price: 350, quantity: 1, image: "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=800&auto=format&fit=crop&q=60" },
-    { name: "Chicken Biryani", price: 300, quantity: 2, image: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=800&auto=format&fit=crop&q=60" }
-  ];
+  // Get cart items from database
+  const [cartItems, setCartItems] = useState([]);
+
+  // Fetch cart data from database
+  const fetchCartData = async () => {
+    if (cartFetchedRef.current) {
+      console.log('🛒 Cart already fetched, skipping...');
+      return;
+    }
+    
+    cartFetchedRef.current = true;
+    console.log('🛒 Fetching cart data...');
+    
+    try {
+      const token = localStorage.getItem('token');
+      const user = localStorage.getItem('user');
+      
+      console.log('🔐 Auth check - Token exists:', !!token);
+      console.log('🔐 Auth check - User exists:', !!user);
+      
+      if (!token) {
+        console.log('❌ No token found, redirecting to login');
+        toast.error("Please login to place an order");
+        navigate('/login');
+        return;
+      }
+
+      if (!user) {
+        console.log('❌ No user data found, redirecting to login');
+        toast.error("Please login to place an order");
+        navigate('/login');
+        return;
+      }
+
+      const response = await axios.get('/cart', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.data && response.data.items) {
+        console.log('Cart data received:', response.data.items);
+        console.log('Cart items length:', response.data.items.length);
+        if (response.data.items.length === 0) {
+          toast.error("Your cart is empty");
+          navigate('/menu');
+          return;
+        }
+        setCartItems(response.data.items);
+      } else {
+        console.log('No cart data received:', response.data);
+        toast.error("Your cart is empty");
+        navigate('/menu');
+      }
+    } catch (error) {
+      console.error('Error fetching cart:', error);
+      if (error.response?.status === 401) {
+        console.log('❌ 401 Unauthorized - clearing auth data and redirecting');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        toast.error("Session expired. Please login again.");
+        navigate('/login');
+      } else {
+        toast.error("Failed to load cart data");
+        navigate('/menu');
+      }
+    } finally {
+      setCartLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    console.log('🔄 Payment component mounted, fetching cart data...');
+    console.log('🔄 Component ID:', Date.now()); // Unique ID for this mount
+    
+    // Reset mounted ref on mount
+    mountedRef.current = true;
+    
+    // Only fetch if we haven't already loaded cart data
+    if (!cartFetchedRef.current) {
+      fetchCartData();
+    } else {
+      console.log('🔄 Cart already fetched, skipping fetch');
+    }
+    
+    // Cleanup function
+    return () => {
+      console.log('🔄 Payment component unmounting...');
+      mountedRef.current = false;
+    };
+  }, []); // Empty dependency array - only run once on mount
+
+  // Monitor cart items changes
+  useEffect(() => {
+    console.log('🛒 Cart items changed:', cartItems.length, 'items');
+  }, [cartItems]);
 
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const tax = Math.round(subtotal * 0.1);
   const finalTotal = subtotal + tax;
+
+
 
   // Validation function
   const validateForm = () => {
@@ -351,11 +450,150 @@ function Checkout() {
     return Object.keys(newErrors).length === 0;
   };
 
+  // Function to save order to backend
+  const saveOrderToBackend = async (paymentStatus = "Pending", paymentMethod) => {
+    try {
+      console.log('📦 Saving order to backend, cart items:', cartItems.length);
+      
+      const token = localStorage.getItem('token');
+      const user = localStorage.getItem('user');
+      
+      console.log('🔐 Order auth check - Token exists:', !!token);
+      console.log('🔐 Order auth check - User exists:', !!user);
+      
+      if (!token) {
+        console.log('❌ No token found for order');
+        throw new Error('No authentication token found');
+      }
+
+      if (!user) {
+        console.log('❌ No user data found for order');
+        throw new Error('No user data found');
+      }
+
+      const orderData = {
+        items: cartItems.map(item => ({
+          name: item.name,
+          qty: item.quantity,
+          price: item.price,
+          productId: item.productId
+        })),
+        totalAmount: finalTotal,
+        paymentMethod: paymentMethod === 'razorpay' ? 'Online' : 'Cash',
+        deliveryAddress: address,
+        paymentStatus: paymentStatus
+      };
+
+      console.log('📦 Sending order data:', orderData);
+      console.log('📦 Authorization header:', `Bearer ${token.substring(0, 20)}...`);
+
+      const response = await axios.post('/orders', orderData, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.data.success) {
+        console.log('✅ Order saved successfully');
+        return response.data.order;
+      } else {
+        throw new Error(response.data.message || 'Failed to place order');
+      }
+    } catch (error) {
+      console.error('Error saving order:', error);
+      if (error.response?.status === 401) {
+        console.log('❌ 401 Unauthorized during order save - clearing auth data');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        throw new Error('Session expired. Please login again.');
+      }
+      if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      }
+      throw error;
+    }
+  };
+
+  // Function to clear cart after successful order
+  const clearCart = async () => {
+    try {
+      console.log('🛒 Clearing cart...');
+      console.log('🛒 Cart items before clearing:', cartItems.length);
+      
+      if (cartItems.length === 0) {
+        console.log('🛒 Cart is already empty, skipping clear operation');
+        return;
+      }
+      
+      const token = localStorage.getItem('token');
+      if (token) {
+        await axios.delete('/cart/clear', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        // Only clear local state after successful backend call
+        console.log('✅ Cart cleared from backend, clearing local state');
+        setCartItems([]);
+      }
+    } catch (error) {
+      console.error('❌ Error clearing cart:', error);
+      // Don't clear local state if backend call fails
+    }
+  };
+
+  // Function to handle order success
+  const handleOrderSuccess = async (orderData, paymentMethod) => {
+    console.log('🎉 Order success, cart items before clearing:', cartItems.length);
+    console.log('🎉 Component mounted:', mountedRef.current);
+    
+    // Show success toast immediately
+    toast.success(
+      `Order placed successfully! ${paymentMethod === 'razorpay' ? 'Payment completed.' : 'Cash on delivery confirmed.'}`,
+      {
+        duration: 5000,
+        icon: '🎉',
+        style: {
+          background: '#10B981',
+          color: '#fff',
+        },
+      }
+    );
+
+    // Clear cart if payment is successful (don't wait for it)
+    if (paymentMethod === "razorpay" || paymentMethod === "cod") {
+      clearCart().catch(error => {
+        console.error('❌ Error clearing cart:', error);
+        // Don't block the flow if cart clearing fails
+      });
+    }
+    
+    // Navigate to order success page immediately
+    navigate('/order-success', { 
+      state: { 
+        orderData,
+        paymentMethod,
+        deliveryAddress: address
+      }
+    });
+  };
+
   const handlePayment = async () => {
+    console.log('💳 Payment initiated, cart items:', cartItems.length);
+    
     if (!validateForm()) {
       toast.error("Please fill in all required fields correctly");
       return;
     }
+
+    if (cartItems.length === 0) {
+      toast.error("Your cart is empty");
+      return;
+    }
+
+    // Store cart items count for debugging
+    const initialCartCount = cartItems.length;
+    console.log('💳 Initial cart count before payment:', initialCartCount);
 
     setLoading(true);
 
@@ -373,9 +611,21 @@ function Checkout() {
           currency: "INR",
           name: "Delicial",
           description: "Order Payment",
-          handler: function (response) {
-            toast.success("Payment successful! Order confirmed.");
-            // Save order details to backend here
+          handler: async function (response) {
+            try {
+              console.log('💳 Razorpay payment successful, saving order...');
+              console.log('💳 Cart items before saving order:', cartItems.length);
+              console.log('💳 Component mounted:', mountedRef.current);
+              
+           
+              
+              // Save order to backend with payment success
+              const orderData = await saveOrderToBackend("Paid", "razorpay");
+              handleOrderSuccess(orderData, "razorpay");
+            } catch (error) {
+              console.error('❌ Error in Razorpay handler:', error);
+              toast.error("Order saved but payment verification failed. Please contact support.");
+            }
           },
           prefill: {
             name: address.name,
@@ -390,16 +640,39 @@ function Checkout() {
         const rzp = new window.Razorpay(options);
         rzp.open();
       } else if (selectedPayment === "cod") {
-        toast.success("Order placed successfully! Cash on delivery confirmed.");
-        // Save COD order to backend here
+        console.log('💳 COD payment selected, saving order...');
+        console.log('💳 Cart items before saving order:', cartItems.length);
+        console.log('💳 Component mounted:', mountedRef.current);
+ 
+        // Save COD order to backend
+        const orderData = await saveOrderToBackend("Pending", "cod");
+        handleOrderSuccess(orderData, "cod");
       }
     } catch (error) {
       console.error("Payment error:", error);
-      toast.error("Payment failed. Please try again.");
+      if (error.message === 'No authentication token found') {
+        toast.error("Please login to place an order");
+        navigate('/login');
+      } else {
+        toast.error("Payment failed. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
   };
+
+  // Show loading state while fetching cart
+  if (cartLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading your cart...</p>
+          <p className="text-sm text-gray-500 mt-2">Please wait while we fetch your order details</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 py-8 px-4">
@@ -415,6 +688,11 @@ function Checkout() {
           <p className="text-gray-600 text-lg">
             Complete your order and enjoy delicious food
           </p>
+          {cartItems.length > 0 && (
+            <p className="text-sm text-gray-500 mt-2">
+              {cartItems.length} item{cartItems.length !== 1 ? 's' : ''} in your cart
+            </p>
+          )}
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

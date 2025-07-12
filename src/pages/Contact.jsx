@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FaMapMarkerAlt, FaPhone, FaEnvelope } from "react-icons/fa";
 import Navbar from "../components/navbar";
-import axios from "axios";
+import axios from "../utils/axios";
 import { toast } from "react-hot-toast";
 
 function Contact() {
@@ -22,7 +22,7 @@ function Contact() {
     e.preventDefault();
     console.log(form);
     try {
-      await axios.post("http://localhost:3000/api/contact", form); // replace with deployed URL if needed
+      await axios.post("/contact", form);
 
       toast.success("Message sent successfully!");
 
