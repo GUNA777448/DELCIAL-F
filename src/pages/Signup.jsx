@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaGoogle, FaGithub } from "react-icons/fa";
+import { FaGoogle, FaFacebook } from "react-icons/fa";
 import axios from "../utils/axios";
 function Signup() {
   const navigate = useNavigate();
@@ -43,6 +43,26 @@ function Signup() {
       alert(
         `Signup failed ❌: ${err.response?.data?.message || "Unknown error"}`
       );
+    }
+  };
+
+  const handleGoogleSignup = async () => {
+    try {
+      // Google signup implementation would go here
+      alert("Google signup coming soon!");
+    } catch (err) {
+      console.error("Google signup error:", err);
+      alert("Google signup failed");
+    }
+  };
+
+  const handleFacebookSignup = async () => {
+    try {
+      // Facebook signup implementation would go here
+      alert("Facebook signup coming soon!");
+    } catch (err) {
+      console.error("Facebook signup error:", err);
+      alert("Facebook signup failed");
     }
   };
 
@@ -184,6 +204,7 @@ function Signup() {
           <div className="mt-6 grid grid-cols-2 gap-3">
             <button
               type="button"
+              onClick={handleGoogleSignup}
               className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
             >
               <FaGoogle className="h-5 w-5 text-red-600" />
@@ -192,10 +213,11 @@ function Signup() {
 
             <button
               type="button"
+              onClick={handleFacebookSignup}
               className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
             >
-              <FaGithub className="h-5 w-5 text-gray-900" />
-              <span className="ml-2">GitHub</span>
+              <FaFacebook className="h-5 w-5 text-blue-600" />
+              <span className="ml-2">Facebook</span>
             </button>
           </div>
         </div>
