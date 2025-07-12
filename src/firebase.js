@@ -1,23 +1,26 @@
 // src/firebase.js
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getAnalytics } from "firebase/analytics";
 
-// Your Firebase config
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyDv9x7bXIaMJ1rdlBbaQrFqSmtWmhPEtrk",
-  authDomain: "delicial-5a1f0.firebaseapp.com",
-  projectId: "delicial-5a1f0",
-  storageBucket: "delicial-5a1f0.appspot.com",
-  messagingSenderId: "862931410572",
-  appId: "1:862931410572:web:0624881a010cf86a92a5a9",
-  measurementId: "G-ZN66B1M0YX",
+  apiKey: "AIzaSyBr2y7j-zy1HvJwJ03yeSzoD5_P7h4chFI",
+  authDomain: "delicial-1cdd7.firebaseapp.com",
+  projectId: "delicial-1cdd7",
+  storageBucket: "delicial-1cdd7.firebasestorage.app",
+  messagingSenderId: "193401528963",
+  appId: "1:193401528963:web:73dd075e88f3f256b971b6",
+  measurementId: "G-9Q4W3V5X9X"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 
 // Auth and Google provider setup
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-export { auth, provider };
+export { auth, provider, analytics };

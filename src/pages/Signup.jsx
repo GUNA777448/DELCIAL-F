@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaGoogle, FaFacebook } from "react-icons/fa";
 import axios from "../utils/axios";
+import { handleFacebookAuth } from "../utils/facebook.js";
 function Signup() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -13,6 +14,32 @@ function Signup() {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleGoogleSignup = async () => {
+    try {
+      // Google signup implementation would go here
+      alert("Google signup coming soon!");
+    } catch (err) {
+      console.error("Google signup error:", err);
+      alert("Google signup failed");
+    }
+  };
+
+  const handleFacebookSignup = async () => {
+    handleFacebookAuth(
+      (userData) => {
+        // Store user data in localStorage
+        localStorage.setItem("token", userData.token);
+        localStorage.setItem("user", JSON.stringify(userData.user));
+        
+        alert("Facebook signup successful!");
+        navigate("/");
+      },
+      (error) => {
+        alert(error);
+      }
+    );
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -43,26 +70,6 @@ function Signup() {
       alert(
         `Signup failed ❌: ${err.response?.data?.message || "Unknown error"}`
       );
-    }
-  };
-
-  const handleGoogleSignup = async () => {
-    try {
-      // Google signup implementation would go here
-      alert("Google signup coming soon!");
-    } catch (err) {
-      console.error("Google signup error:", err);
-      alert("Google signup failed");
-    }
-  };
-
-  const handleFacebookSignup = async () => {
-    try {
-      // Facebook signup implementation would go here
-      alert("Facebook signup coming soon!");
-    } catch (err) {
-      console.error("Facebook signup error:", err);
-      alert("Facebook signup failed");
     }
   };
 

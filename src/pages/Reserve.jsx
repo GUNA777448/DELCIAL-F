@@ -80,8 +80,8 @@ function Reserve() {
       if (token) {
         try {
                   const response = await axios.get("/reservations", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+            headers: { Authorization: `Bearer ${token}` },
+          });
           setUserReservations(response.data.data || []);
         } catch (error) {
           console.log("Could not fetch reservations:", error.message);

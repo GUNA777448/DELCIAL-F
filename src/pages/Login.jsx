@@ -3,7 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaGoogle, FaFacebook, FaEye, FaEyeSlash } from "react-icons/fa";
 import axios from "../utils/axios";
 import { signInWithPopup } from "firebase/auth";
-import { auth, provider } from "../firebase"; // ✅ adjust path if needed
+import { auth, googleProvider } from "../firebase"; // ✅ adjust path if needed
+import { handleFacebookAuth } from "../utils/facebook.js";
 
 const carouselImages = [
   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTC_HNtzab6ojgN54e2XDDJ31nBF6n84Iulpg&s",
@@ -27,6 +28,8 @@ function Login() {
     }, 3000);
     return () => clearInterval(interval);
   }, []);
+
+
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -52,13 +55,17 @@ function Login() {
 
   const handleGoogleLogin = async () => {
     try {
-      const result = await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
       const token = await user.getIdToken();
       localStorage.setItem("token", token);
       localStorage.setItem(
         "user",
-        JSON.stringify({ name: user.displayName, email: user.email })
+        JSON.stringify({ 
+          name: user.displayName, 
+          email: user.email,
+          photoURL: user.photoURL 
+        })
       );
       alert("Google login successful!");
       navigate("/");
@@ -69,14 +76,19 @@ function Login() {
   };
 
   const handleFacebookLogin = async () => {
-    try {
-      // Facebook login implementation would go here
-      // For now, showing a placeholder message
-      alert("Facebook login coming soon!");
-    } catch (err) {
-      console.error("Facebook login error:", err);
-      alert("Facebook login failed");
-    }
+    handleFacebookAuth(
+      (userData) => {
+        // Store user data in localStorage
+        localStorage.setItem("token", userData.token);
+        localStorage.setItem("user", JSON.stringify(userData.user));
+        
+        alert("Facebook login successful!");
+        navigate("/");
+      },
+      (error) => {
+        alert(error);
+      }
+    );
   };
 
   return (

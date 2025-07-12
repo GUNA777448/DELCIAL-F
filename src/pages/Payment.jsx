@@ -566,7 +566,7 @@ function Checkout() {
         console.error('❌ Error clearing cart:', error);
         // Don't block the flow if cart clearing fails
       });
-    }
+  }
     
     // Navigate to order success page immediately
     navigate('/order-success', { 
