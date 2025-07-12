@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaGoogle, FaFacebook, FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaGoogle, FaEye, FaEyeSlash } from "react-icons/fa";
 import axios from "../utils/axios";
 import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../firebase"; // ✅ adjust path if needed
-import { handleFacebookAuth } from "../utils/facebook.js";
 
 const carouselImages = [
   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTC_HNtzab6ojgN54e2XDDJ31nBF6n84Iulpg&s",
@@ -75,21 +74,7 @@ function Login() {
     }
   };
 
-  const handleFacebookLogin = async () => {
-    handleFacebookAuth(
-      (userData) => {
-        // Store user data in localStorage
-        localStorage.setItem("token", userData.token);
-        localStorage.setItem("user", JSON.stringify(userData.user));
-        
-        alert("Facebook login successful!");
-        navigate("/");
-      },
-      (error) => {
-        alert(error);
-      }
-    );
-  };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f8fafc] relative px-2">
@@ -136,18 +121,11 @@ function Login() {
 
           <div className="space-y-3 mb-4">
             <button
-              className="w-full flex items-center border border-gray-300 rounded-lg px-4 py-2 bg-white hover:bg-gray-50 transition mb-1"
+              className="w-full flex items-center border border-gray-300 rounded-lg px-4 py-2 bg-white hover:bg-gray-50 transition"
               onClick={handleGoogleLogin}
             >
               <FaGoogle className="text-xl mr-2 text-red-500" />
               <span className="flex-1 text-left">Continue with Google</span>
-            </button>
-            <button 
-              className="w-full flex items-center border border-gray-300 rounded-lg px-4 py-2 bg-white hover:bg-gray-50 transition"
-              onClick={handleFacebookLogin}
-            >
-              <FaFacebook className="text-xl mr-2 text-blue-600" />
-              <span className="flex-1 text-left">Continue with Facebook</span>
             </button>
           </div>
 

@@ -1,10 +1,8 @@
-// src/firebase.js
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getAnalytics } from "firebase/analytics";
 
 // Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyBr2y7j-zy1HvJwJ03yeSzoD5_P7h4chFI",
   authDomain: "delicial-1cdd7.firebaseapp.com",
@@ -19,8 +17,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
-// Auth and Google provider setup
+// Auth providers
 const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
+const googleProvider = new GoogleAuthProvider();
 
-export { auth, provider, analytics };
+export { auth, googleProvider, analytics };

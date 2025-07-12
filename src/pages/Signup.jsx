@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaGoogle, FaFacebook } from "react-icons/fa";
+import { FaGoogle } from "react-icons/fa";
 import axios from "../utils/axios";
-import { handleFacebookAuth } from "../utils/facebook.js";
 function Signup() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -26,21 +25,7 @@ function Signup() {
     }
   };
 
-  const handleFacebookSignup = async () => {
-    handleFacebookAuth(
-      (userData) => {
-        // Store user data in localStorage
-        localStorage.setItem("token", userData.token);
-        localStorage.setItem("user", JSON.stringify(userData.user));
-        
-        alert("Facebook signup successful!");
-        navigate("/");
-      },
-      (error) => {
-        alert(error);
-      }
-    );
-  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -208,7 +193,7 @@ function Signup() {
             </div>
           </div>
 
-          <div className="mt-6 grid grid-cols-2 gap-3">
+          <div className="mt-6">
             <button
               type="button"
               onClick={handleGoogleSignup}
@@ -216,15 +201,6 @@ function Signup() {
             >
               <FaGoogle className="h-5 w-5 text-red-600" />
               <span className="ml-2">Google</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={handleFacebookSignup}
-              className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
-            >
-              <FaFacebook className="h-5 w-5 text-blue-600" />
-              <span className="ml-2">Facebook</span>
             </button>
           </div>
         </div>
