@@ -1,5 +1,5 @@
-import { signInWithPopup } from "firebase/auth";
-import { auth, facebookProvider } from "../firebase.js";
+import { signInWithPopup, FacebookAuthProvider } from "firebase/auth";
+import { auth, facebookProvider } from "../firebase";
 
 // Facebook Login Handler using Firebase Auth
 export const handleFacebookAuth = async (onSuccess, onError) => {
