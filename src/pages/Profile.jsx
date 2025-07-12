@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaEnvelope, FaPhone, FaUser, FaTransgender, FaBirthdayCake, FaMapMarkerAlt, FaEdit, FaSave, FaTimes, FaChevronDown, FaChevronUp, FaCreditCard, FaSignOutAlt, FaTrash } from "react-icons/fa";
+import { FaEnvelope, FaPhone, FaUser, FaTransgender, FaBirthdayCake, FaMapMarkerAlt, FaEdit, FaSave, FaTimes, FaChevronDown, FaChevronUp, FaCreditCard, FaSignOutAlt, FaTrash, FaHome } from "react-icons/fa";
 import axios from "../utils/axios";
 import { toast } from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
@@ -15,6 +15,7 @@ const Profile = () => {
     email: "",
     phone: "",
     gender: "",
+    birthday: "",
     age: "",
     profilePic:
       "https://cdn.pixabay.com/photo/2021/11/24/05/19/user-6820232_1280.png",
@@ -104,9 +105,17 @@ const Profile = () => {
     if (!profile.name.trim()) newErrors.name = "Name is required";
     else if (profile.name.trim().length < 2) newErrors.name = "Name must be at least 2 characters";
     if (profile.phone && profile.phone.length < 10) newErrors.phone = "Phone number must be at least 10 digits";
-    if (profile.age) {
-      const ageNum = parseInt(profile.age);
-      if (isNaN(ageNum) || ageNum < 1 || ageNum > 120) newErrors.age = "Age must be between 1 and 120";
+    if (profile.birthday) {
+      const birthDate = new Date(profile.birthday);
+      const today = new Date();
+      if (isNaN(birthDate.getTime())) newErrors.birthday = "Please enter a valid birthday";
+      else if (birthDate > today) newErrors.birthday = "Birthday cannot be in the future";
+      else {
+        const age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        const actualAge = monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate()) ? age - 1 : age;
+        if (actualAge > 120) newErrors.birthday = "Please enter a valid birthday (maximum age: 120 years)";
+      }
     }
     if (profile.gender && !['male', 'female', 'other', 'prefer not to say'].includes(profile.gender.toLowerCase())) newErrors.gender = "Please select a valid gender";
     setErrors(newErrors);
@@ -127,7 +136,7 @@ const Profile = () => {
           name: profile.name,
           phone: profile.phone,
           gender: profile.gender,
-          age: profile.age,
+          birthday: profile.birthday,
           profilePic: profile.profilePic,
           address: profile.address,
         },
@@ -230,13 +239,19 @@ const Profile = () => {
                 <FaTransgender /> {profile.gender}
               </div>
             )}
-            {profile.age && (
+            {profile.birthday && (
               <div className="flex items-center justify-center gap-2 text-gray-600 mt-1">
-                <FaBirthdayCake /> {profile.age}
+                <FaBirthdayCake /> {new Date(profile.birthday).toLocaleDateString()} ({profile.age} years old)
               </div>
             )}
           </div>
           <div className="mt-6 flex flex-col gap-2 w-full">
+            <Link
+              to="/"
+              className="w-full flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-xl font-semibold transition"
+            >
+              <FaHome /> Back to Home
+            </Link>
             <button
               onClick={handleLogout}
               className="w-full flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white py-2 rounded-xl font-semibold transition"
@@ -384,18 +399,25 @@ const Profile = () => {
               </select>
               {errors.gender && <p className="text-red-500 text-sm mt-1">{errors.gender}</p>}
             </div>
-            {/* Age */}
+            {/* Birthday */}
             <div className="mb-4">
-              <label className={labelClass}><FaBirthdayCake /> Age</label>
+              <label className={labelClass}><FaBirthdayCake /> Birthday</label>
               <input
-                type="number"
-                value={profile.age}
-                onChange={(e) => setProfile((prev) => ({ ...prev, age: e.target.value }))}
-                placeholder="Age"
+                type="date"
+                value={profile.birthday ? profile.birthday.split('T')[0] : ''}
+                onChange={(e) => {
+                  setProfile((prev) => ({ ...prev, birthday: e.target.value }));
+                  if (errors.birthday) setErrors(prev => ({ ...prev, birthday: "" }));
+                }}
+                placeholder="Birthday"
                 disabled={!isEditing}
-                className={inputClass + (errors.age ? " border-red-400" : "")}
+                className={inputClass + (errors.birthday ? " border-red-400" : "")}
+                max={new Date().toISOString().split('T')[0]}
               />
-              {errors.age && <p className="text-red-500 text-sm mt-1">{errors.age}</p>}
+              {errors.birthday && <p className="text-red-500 text-sm mt-1">{errors.birthday}</p>}
+              {profile.birthday && profile.age && (
+                <p className="text-green-600 text-sm mt-1">Age: {profile.age} years old</p>
+              )}
             </div>
             {/* Address */}
             <div className="mb-4">
