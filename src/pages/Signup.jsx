@@ -50,17 +50,17 @@ function Signup() {
       return;
     }
 
+    const signupData = {
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+    };
+
+    console.log("Sending signup data:", signupData);
+
     try {
-      const response = await axios.post("/auth/signup", {
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-      });
-      console.log("Sending data to server:", {
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-      });
+      const response = await axios.post("/auth/signup", signupData);
+      console.log("Signup response:", response.data);
 
       toast.success("Signup successful ✅");
 
@@ -73,7 +73,19 @@ function Signup() {
       }));
       navigate("/");
     } catch (err) {
-      console.error("Signup error 💥", err);
+      console.error("Signup error details:", {
+        message: err.message,
+        status: err.response?.status,
+        statusText: err.response?.statusText,
+        data: err.response?.data,
+        headers: err.response?.headers,
+        config: {
+          url: err.config?.url,
+          method: err.config?.method,
+          headers: err.config?.headers,
+          data: err.config?.data
+        }
+      });
       
       // Handle different types of errors
       if (err.response) {
