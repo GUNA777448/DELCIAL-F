@@ -2,6 +2,10 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaGoogle } from "react-icons/fa";
 import axios from "../utils/axios";
+import { signInWithPopup } from "firebase/auth";
+import { auth, googleProvider } from "../firebase";
+import { toast } from "react-hot-toast";
+
 function Signup() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -17,11 +21,23 @@ function Signup() {
 
   const handleGoogleSignup = async () => {
     try {
-      // Google signup implementation would go here
-      alert("Google signup coming soon!");
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+      const token = await user.getIdToken();
+      localStorage.setItem("token", token);
+      localStorage.setItem(
+        "user",
+        JSON.stringify({ 
+          name: user.displayName, 
+          email: user.email,
+          photoURL: user.photoURL 
+        })
+      );
+      toast.success("Google signup successful!");
+      navigate("/");
     } catch (err) {
       console.error("Google signup error:", err);
-      alert("Google signup failed");
+      toast.error("Google signup failed");
     }
   };
 
@@ -30,7 +46,7 @@ function Signup() {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match ⚠️");
+      toast.error("Passwords do not match ⚠️");
       return;
     }
 
@@ -46,15 +62,31 @@ function Signup() {
         password: formData.password,
       });
 
-      alert("Signup successful ✅");
+      toast.success("Signup successful ✅");
 
-      localStorage.setItem("user", JSON.stringify(response.data));
-      navigate("/"); // or navigate to dashboard/admin based on role
+      // Store user data and token
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("user", JSON.stringify({
+        name: response.data.name,
+        email: response.data.email,
+        _id: response.data._id
+      }));
+      navigate("/");
     } catch (err) {
-      console.error("Signup error 💥", err.response?.data || err.message);
-      alert(
-        `Signup failed ❌: ${err.response?.data?.message || "Unknown error"}`
-      );
+      console.error("Signup error 💥", err);
+      
+      // Handle different types of errors
+      if (err.response) {
+        // Server responded with error status
+        const errorMessage = err.response.data?.message || err.response.data || "Signup failed";
+        toast.error(`Signup failed: ${errorMessage}`);
+      } else if (err.request) {
+        // Network error
+        toast.error("Network error. Please check your connection.");
+      } else {
+        // Other error
+        toast.error("Signup failed. Please try again.");
+      }
     }
   };
 
@@ -126,6 +158,7 @@ function Signup() {
                 name="password"
                 type="password"
                 required
+                autoComplete="new-password"
                 value={formData.password}
                 onChange={handleChange}
                 className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
@@ -145,6 +178,7 @@ function Signup() {
                 name="confirmPassword"
                 type="password"
                 required
+                autoComplete="new-password"
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"

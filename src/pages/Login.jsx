@@ -4,6 +4,7 @@ import { FaGoogle, FaEye, FaEyeSlash } from "react-icons/fa";
 import axios from "../utils/axios";
 import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../firebase"; // ✅ adjust path if needed
+import { toast } from "react-hot-toast";
 
 const carouselImages = [
   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTC_HNtzab6ojgN54e2XDDJ31nBF6n84Iulpg&s",
@@ -41,14 +42,23 @@ function Login() {
       const { token, name, email } = response.data;
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify({ name, email }));
-      alert("Login successful!");
+      toast.success("Login successful!");
       navigate("/");
     } catch (error) {
-      console.error(
-        "Login failed:",
-        error.response?.data?.message || error.message
-      );
-      alert("Login failed. Please check your credentials.");
+      console.error("Login failed:", error);
+      
+      // Handle different types of errors
+      if (error.response) {
+        // Server responded with error status
+        const errorMessage = error.response.data?.message || error.response.data || "Login failed";
+        toast.error(`Login failed: ${errorMessage}`);
+      } else if (error.request) {
+        // Network error
+        toast.error("Network error. Please check your connection.");
+      } else {
+        // Other error
+        toast.error("Login failed. Please try again.");
+      }
     }
   };
 
@@ -66,14 +76,13 @@ function Login() {
           photoURL: user.photoURL 
         })
       );
-      alert("Google login successful!");
+      toast.success("Google login successful!");
       navigate("/");
     } catch (err) {
       console.error("Google login error:", err);
-      alert("Google login failed");
+      toast.error("Google login failed");
     }
   };
-
 
 
   return (
@@ -85,7 +94,9 @@ function Login() {
             <img
               src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhFU1wrMmUqiDfqCLCwoIi87VSKnR7KxrTmWBaP8NU76VfoLgcrFpFmYzZmCi_0i1wKp1e3mIBwvtWvWBeAdLYAtNo-bNKI3NmK4x6Itky-noRWw8TYZm4NnezxEgTTuYw9hpoEZ25Bo9rnY2geS12YWFUH-V3MuAEKqoUo8n4VZGQydai5YT_Ei9kIW3E/s320/Sophisticated%20Restaurant%20Logo%20-%20Letter%20'D'.png"
               alt=""
-              className="h-[100px] w-[100px] rounded-full"
+              className="h-[100px] w-[100px] rounded-full" onClick={() => {
+                navigate("/");
+              }}
             />
             <h1 className="text-blue-900 text-4xl font-extrabold">Delicial</h1>
           </div>
@@ -150,6 +161,7 @@ function Login() {
                 name="email"
                 type="email"
                 required
+                autoComplete="email"
                 value={formData.email}
                 onChange={handleChange}
                 className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-colors text-gray-900"
@@ -169,6 +181,7 @@ function Login() {
                   name="password"
                   type={showPassword ? "text" : "password"}
                   required
+                  autoComplete="current-password"
                   value={formData.password}
                   onChange={handleChange}
                   className="block w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-colors text-gray-900 pr-10"
