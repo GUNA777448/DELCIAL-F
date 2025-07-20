@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaGoogle, FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import axios from "../utils/axios";
-import { signInWithPopup } from "firebase/auth";
-import { auth, googleProvider } from "../firebase"; // ✅ adjust path if needed
 import { toast } from "react-hot-toast";
 
 const carouselImages = [
@@ -28,8 +26,6 @@ function Login() {
     }, 3000);
     return () => clearInterval(interval);
   }, []);
-
-
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -61,55 +57,6 @@ function Login() {
       }
     }
   };
-
-  const handleGoogleLogin = async () => {
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
-      const firebaseToken = await user.getIdToken();
-      
-      // Try Firebase endpoint first, fallback to signup endpoint
-      let response;
-      try {
-        response = await axios.post("/auth/firebase", {
-          firebaseToken: firebaseToken,
-          userData: {
-            email: user.email,
-            name: user.displayName,
-            photoURL: user.photoURL
-          }
-        });
-      } catch (firebaseError) {
-        console.log("Firebase endpoint failed, trying signup endpoint...");
-        // Fallback to signup endpoint
-        response = await axios.post("/auth/signup", {
-          firebaseToken: firebaseToken,
-          userData: {
-            email: user.email,
-            name: user.displayName,
-            photoURL: user.photoURL
-          }
-        });
-      }
-      
-      const { token, name, email, profilePic } = response.data;
-      
-      // Store JWT token from our backend, not Firebase token
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify({ 
-        name, 
-        email,
-        photoURL: profilePic
-      }));
-      
-      toast.success("Google login successful!");
-      navigate("/");
-    } catch (err) {
-      console.error("Google login error:", err);
-      toast.error("Google login failed");
-    }
-  };
-
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f8fafc] relative px-2">
@@ -155,24 +102,6 @@ function Login() {
           </div>
 
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Log in</h2>
-
-          <div className="space-y-3 mb-4">
-            <button
-              className="w-full flex items-center border border-gray-300 rounded-lg px-4 py-2 bg-white hover:bg-gray-50 transition"
-              onClick={handleGoogleLogin}
-            >
-              <FaGoogle className="text-xl mr-2 text-red-500" />
-              <span className="flex-1 text-left">Continue with Google</span>
-            </button>
-          </div>
-
-          <div className="flex items-center my-4">
-            <div className="flex-1 border-t border-gray-200"></div>
-            <span className="mx-2 text-gray-400 text-xs">
-              Or login with email
-            </span>
-            <div className="flex-1 border-t border-gray-200"></div>
-          </div>
 
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>

@@ -1,9 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaGoogle } from "react-icons/fa";
 import axios from "../utils/axios";
-import { signInWithPopup } from "firebase/auth";
-import { auth, googleProvider } from "../firebase";
 import { toast } from "react-hot-toast";
 
 function Signup() {
@@ -18,55 +15,6 @@ function Signup() {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
-  const handleGoogleSignup = async () => {
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
-      const firebaseToken = await user.getIdToken();
-      
-      // Try Firebase endpoint first, fallback to signup endpoint
-      let response;
-      try {
-        response = await axios.post("/auth/firebase", {
-          firebaseToken: firebaseToken,
-          userData: {
-            email: user.email,
-            name: user.displayName,
-            photoURL: user.photoURL
-          }
-        });
-      } catch (firebaseError) {
-        console.log("Firebase endpoint failed, trying signup endpoint...");
-        // Fallback to signup endpoint
-        response = await axios.post("/auth/signup", {
-          firebaseToken: firebaseToken,
-          userData: {
-            email: user.email,
-            name: user.displayName,
-            photoURL: user.photoURL
-          }
-        });
-      }
-      
-      const { token, name, email, profilePic } = response.data;
-      
-      // Store JWT token from our backend, not Firebase token
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify({ 
-        name, 
-        email,
-        photoURL: profilePic
-      }));
-      
-      toast.success("Google signup successful!");
-      navigate("/");
-    } catch (err) {
-      console.error("Google signup error:", err);
-      toast.error("Google signup failed");
-    }
-  };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -252,30 +200,6 @@ function Signup() {
             Create Account
           </button>
         </form>
-
-        <div className="mt-6">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">
-                Or sign up with
-              </span>
-            </div>
-          </div>
-
-          <div className="mt-6">
-            <button
-              type="button"
-              onClick={handleGoogleSignup}
-              className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
-            >
-              <FaGoogle className="h-5 w-5 text-red-600" />
-              <span className="ml-2">Google</span>
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );

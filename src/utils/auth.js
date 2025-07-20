@@ -1,5 +1,4 @@
 // Authentication utility functions
-import { auth } from '../firebase';
 
 // Check if user is authenticated
 export const isAuthenticated = () => {
@@ -81,21 +80,4 @@ export const validateSession = () => {
   }
   
   return true;
-};
-
-// Handle Firebase auth state changes
-export const handleAuthStateChange = (user) => {
-  if (user) {
-    // User is signed in with Firebase
-    console.log("Firebase user signed in:", user.email);
-  } else {
-    // User is signed out from Firebase
-    console.log("Firebase user signed out");
-    // Don't clear local storage here as we might have JWT token
-  }
-};
-
-// Initialize auth state listener
-export const initAuthListener = () => {
-  auth.onAuthStateChanged(handleAuthStateChange);
 }; 

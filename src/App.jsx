@@ -17,7 +17,7 @@ import Profile from "./pages/Profile";
 import AdminDashboard from "./pages/Admin";
 import LoadingPage from "./components/LoadingPage";
 import OrderSuccess from "./pages/OrderSuccess";
-import { validateSession, initAuthListener } from "./utils/auth";
+import { validateSession } from "./utils/auth";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -28,9 +28,6 @@ function App() {
 
   // Initialize authentication and validate session
   useEffect(() => {
-    // Initialize Firebase auth listener
-    initAuthListener();
-    
     // Validate existing session
     validateSession();
     
