@@ -25,15 +25,29 @@ function Signup() {
       const user = result.user;
       const firebaseToken = await user.getIdToken();
       
-      // Authenticate with our backend using Firebase data
-      const response = await axios.post("/auth/firebase", {
-        firebaseToken: firebaseToken,
-        userData: {
-          email: user.email,
-          name: user.displayName,
-          photoURL: user.photoURL
-        }
-      });
+      // Try Firebase endpoint first, fallback to signup endpoint
+      let response;
+      try {
+        response = await axios.post("/auth/firebase", {
+          firebaseToken: firebaseToken,
+          userData: {
+            email: user.email,
+            name: user.displayName,
+            photoURL: user.photoURL
+          }
+        });
+      } catch (firebaseError) {
+        console.log("Firebase endpoint failed, trying signup endpoint...");
+        // Fallback to signup endpoint
+        response = await axios.post("/auth/signup", {
+          firebaseToken: firebaseToken,
+          userData: {
+            email: user.email,
+            name: user.displayName,
+            photoURL: user.photoURL
+          }
+        });
+      }
       
       const { token, name, email, profilePic } = response.data;
       
