@@ -66,16 +66,28 @@ function Login() {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
-      const token = await user.getIdToken();
-      localStorage.setItem("token", token);
-      localStorage.setItem(
-        "user",
-        JSON.stringify({ 
-          name: user.displayName, 
+      const firebaseToken = await user.getIdToken();
+      
+      // Authenticate with our backend using Firebase data
+      const response = await axios.post("/auth/firebase", {
+        firebaseToken: firebaseToken,
+        userData: {
           email: user.email,
-          photoURL: user.photoURL 
-        })
-      );
+          name: user.displayName,
+          photoURL: user.photoURL
+        }
+      });
+      
+      const { token, name, email, profilePic } = response.data;
+      
+      // Store JWT token from our backend, not Firebase token
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify({ 
+        name, 
+        email,
+        photoURL: profilePic
+      }));
+      
       toast.success("Google login successful!");
       navigate("/");
     } catch (err) {

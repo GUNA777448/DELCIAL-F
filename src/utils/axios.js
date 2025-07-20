@@ -8,9 +8,15 @@ const instance = axios.create({
   },
 });
 
-// Request interceptor for debugging
+// Request interceptor for debugging and adding auth token
 instance.interceptors.request.use(
   (config) => {
+    // Add auth token to all requests
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    
     console.log('Request:', {
       method: config.method,
       url: config.url,
@@ -25,7 +31,7 @@ instance.interceptors.request.use(
   }
 );
 
-// Response interceptor for debugging
+// Response interceptor for debugging and handling auth errors
 instance.interceptors.response.use(
   (response) => {
     console.log('Response:', {
@@ -41,6 +47,19 @@ instance.interceptors.response.use(
       data: error.response?.data,
       message: error.message
     });
+    
+    // Handle 401 Unauthorized errors
+    if (error.response?.status === 401) {
+      console.log("Session expired, clearing local storage");
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      
+      // Redirect to login if not already there
+      if (window.location.pathname !== '/login' && window.location.pathname !== '/signup') {
+        window.location.href = '/login';
+      }
+    }
+    
     return Promise.reject(error);
   }
 );
